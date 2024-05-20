@@ -75,7 +75,7 @@ app.use("/api/user", userRoute);
 app.use("/api/listing", listingRoute);
 
 /* Sending a response message to the home route. */
-app.get("/test", (req, res) => {
+app.get("/", (req, res) => {
   res.send({
     message: "Welcome to Real-Estate App",
   });
