@@ -4,9 +4,9 @@ import React from "react";
 
 import styled from "styled-components";
 
-import PageNavigation from "../Components/PageNavigation.jsx";
+import PageNavigation from "../../Components/PageNavigation.jsx";
 
-import Layout from "../Components/Layout.jsx";
+import Layout from "../../Components/Layout.jsx";
 
 export default function AboutPage() {
   /* */
@@ -61,12 +61,14 @@ export default function AboutPage() {
 
     /* */
   );
+
+  /* */
 }
 
 /* **************************************************************************************** */
-/* Using styled of styled-components we are styling the images ie.. the images to be display
-   vertically and the seleced(click) image that is to be display horizontally and storing 
-   in a variable Wrapper. This Wrapper will be use to wrap the whole elements we want to return.
+/* Using media-queries of styled of styled-components we are providing responsiveness for 
+   mobile size and storing in a variable Wrapper. This Wrapper will be use to wrap the whole 
+   elements we want to return.
 */
 /* **************************************************************************************** */
 

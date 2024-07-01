@@ -4,14 +4,11 @@ import React from "react";
 
 import styled from "styled-components";
 
-import Layout from "../Components/Layout.jsx";
+import Layout from "../../Components/Layout.jsx";
 
-import PageNavigation from "../Components/PageNavigation.jsx";
+import PageNavigation from "../../Components/PageNavigation.jsx";
 
 import { Link } from "react-router-dom";
-
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 
 export default function PaymentSuccess() {
   /* */
@@ -22,8 +19,6 @@ export default function PaymentSuccess() {
     <Wrapper>
       <Layout title={"Email-Subscription-Success-Page"}>
         {/* */}
-
-        <ToastContainer className="text-2xl font-bold" />
 
         <PageNavigation title="Subscription Success" />
 
@@ -76,12 +71,14 @@ export default function PaymentSuccess() {
 
     /* */
   );
+
+  /* */
 }
 
 /* **************************************************************************************** */
-/* Using styled of styled-components we are styling the images ie.. the images to be display
-   vertically and the seleced(click) image that is to be display horizontally and storing 
-   in a variable Wrapper. This Wrapper will be use to wrap the whole elements we want to return.
+/* Using media-queries of styled of styled-components we are providing responsiveness for 
+   mobile size and storing in a variable Wrapper. This Wrapper will be use to wrap the whole 
+   elements we want to return.
 */
 /* **************************************************************************************** */
 

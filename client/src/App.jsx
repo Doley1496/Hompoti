@@ -11,38 +11,47 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { GlobalStyle } from "./GlobalStyle.jsx";
 import { ThemeProvider } from "styled-components";
 
-import HomePage from "./Pages/HomePage.jsx";
-import AboutPage from "./Pages/AboutPage.jsx";
-import ContactPage from "./Pages/ContactPage.jsx";
-import PrivacyPolicyPage from "./Pages/PrivacyPolicyPage.jsx";
-import TermsAndConditionsPage from "./Pages/TermsAndConditionsPage.jsx";
-import PageNotFoundPage from "./Pages/PageNotFoundPage.jsx";
-import FaqPage from "./Pages/FaqPage.jsx";
-import ComplaintSuccess from "./Pages/ComplaintSuccess.jsx";
-import EmailSubscriptionPage from "./Pages/EmailSubscriptionSuccessPage.jsx";
+/* ALL PAGES : */
 
-import SignUpPage from "./Pages/SignUpPage.jsx";
-import SignInPage from "./Pages/SignInPage.jsx";
+import HomePage from "./Pages/All/HomePage.jsx";
+import AboutPage from "./Pages/All/AboutPage.jsx";
+import ContactPage from "./Pages/All/ContactPage.jsx";
+import PrivacyPolicyPage from "./Pages/All/PrivacyPolicyPage.jsx";
+import TermsAndConditionsPage from "./Pages/All/TermsAndConditionsPage.jsx";
+import PageNotFoundPage from "./Pages/All/PageNotFoundPage.jsx";
+import FaqPage from "./Pages/All/FaqPage.jsx";
+import ComplaintSuccessPage from "./Pages/All/ComplaintSuccessPage.jsx";
+import EmailSubscriptionPage from "./Pages/All/EmailSubscriptionSuccessPage.jsx";
+
+import SendLinkPage from "./Pages/All/SendLinkPage.jsx";
+import ResetPasswordPage from "./Pages/All/ResetPasswordPage.jsx";
+
+import ListingPage from "./Pages/All/ListingPage.jsx";
+import SearchPage from "./Pages/All/SearchPage.jsx";
+
+import PropertySummaryPage from "./Pages/All/PropertySummaryPage.jsx";
+
+/* USER PAGES : */
+
+import CreateListingPage from "./Pages/User/CreateListingPage.jsx";
+import UpdateListingPage from "./Pages/User/UpdateListingPage.jsx";
+import ShowListingsPage from "./Pages/User/ShowListingsPage.jsx";
+
+import SignUpPage from "./Pages/User/SignUpPage.jsx";
+import SignInPage from "./Pages/User/SignInPage.jsx";
+import ProfilePage from "./Pages/User/ProfilePage.jsx";
 
 import Header from "./Components/Header.jsx";
 import Footer from "./Components/Footer.jsx";
 
-import SendLinkPage from "./Pages/SendLinkPage.jsx";
-import ResetPasswordPage from "./Pages/ResetPasswordPage.jsx";
-
-import ListingPage from "./Pages/ListingPage.jsx";
-import SearchPage from "./Pages/SearchPage.jsx";
-
-import UserPrivateRoute from "./Components/UserPrivateRoute.jsx";
-
-import CreateListingPage from "./Pages/User/CreateListingPage.jsx";
-import UpdateListingPage from "./Pages/User/UpdateListingPage.jsx";
-
-import ShowListingsPage from "./Pages/User/ShowListingsPage.jsx";
-
 import UserDashboardPage from "./Pages/User/UserDashboardPage.jsx";
 
-import ProfilePage from "./Pages/User/ProfilePage.jsx";
+import UserPrivateRoute from "./Components/UserPrivateRoute.jsx";
+import PrivateRoute from "./Components/PrivateRoute";
+import VerificationPrivateRoute from "./Components/VerificationPrivateRoute.jsx";
+
+import VerificationPage from "./Pages/User/VerificationPage.jsx";
+import MainVerificationPage from "./Pages/User/MainVerificationPage.jsx";
 
 export default function App() {
   /* */
@@ -107,7 +116,7 @@ export default function App() {
           <Route path="/terms" element={<TermsAndConditionsPage />} />
 
           <Route path="/faq" element={<FaqPage />} />
-          <Route path="/complaintSuccess" element={<ComplaintSuccess />} />
+
           <Route
             path="/emailSubscription"
             element={<EmailSubscriptionPage />}
@@ -129,6 +138,46 @@ export default function App() {
 
           {/* Means when all the above routes is not found then show this route(PageNotFound) */}
           <Route path="*" element={<PageNotFoundPage />} />
+
+          {/* *********************************************************************** */}
+          {/* ***********************  Private Route  ******************************* */}
+          {/* *********************************************************************** */}
+
+          <Route element={<PrivateRoute />}>
+            {/* */}
+
+            <Route
+              path="/complaintSuccess"
+              element={<ComplaintSuccessPage />}
+            />
+
+            <Route
+              path="/propertySummaryPage"
+              element={<PropertySummaryPage />}
+            />
+
+            {/* */}
+          </Route>
+
+          <Route element={<VerificationPrivateRoute />}>
+            {/* */}
+
+            <Route
+              path="/verification/:message/:statusCode"
+              element={<VerificationPage />}
+            />
+
+            <Route
+              path="/verify-email/:userId/:token/:email"
+              element={<MainVerificationPage />}
+            />
+
+            {/* */}
+          </Route>
+
+          {/* *********************************************************************** */}
+          {/* ***********************  User Private Route  ************************** */}
+          {/* *********************************************************************** */}
 
           {/* Creating a protected route to make the user's Dashboard component a private route.
               In the UserPrivateRoute page we have written a condition that when the user is 
@@ -168,4 +217,6 @@ export default function App() {
 
     /* */
   );
+
+  /* */
 }

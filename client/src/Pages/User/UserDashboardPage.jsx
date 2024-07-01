@@ -15,19 +15,11 @@ import { UserMenu } from "../../Components/UserMenu.jsx";
 const UserDashboard = () => {
   /* */
 
-  /* Using useSelector() hook we are destructing (importing) currentUser from the initial-state
-     (ie. currentUser) of the userSlice variable using the global state user. 
-  */
   const { currentUser } = useSelector((state) => state.user);
 
-  /* *********************************************************************************************** */
-  /* *************************************      return      **************************************** */
-  /* *********************************************************************************************** */
-
-  /* Returning the content that we will display in the "/dashboard/user" route.
-     because for this route we have provide component {<UserDashboardPage />}
-     ie.    <Route path="/dashboard/user" element={<UserDashboardPage />} />  
-  */
+  /* ************************************************************************************* */
+  /* **********************************    return    ************************************* */
+  /* ************************************************************************************* */
 
   return (
     /* */
@@ -58,16 +50,11 @@ const UserDashboard = () => {
             {/* 2nd part contains user's information*/}
 
             <div className="col-md-7 ml-[80px] responsive-dashboard-info">
-              <div className="text-[#800000] mt-[50px] font-bold font-sans ">
+              <div className="text-[#800000] mt-[50px]">
                 {/* */}
 
-                {/* If we get auth variable then we will apply optional chaining and if we get 
-                    the user then we can show the user's details here ( ie.. in this page we will 
-                    show user's information as we are creating for user dashboard.
-                */}
-
                 <div className="text-4xl mb-5 responsive-dashboard-info1">
-                  <p className="">
+                  <p className="font-semibold font-sans">
                     {/* */}
 
                     <span> My Name </span>
@@ -83,7 +70,7 @@ const UserDashboard = () => {
                 </div>
 
                 <div className="text-4xl mb-5 responsive-dashboard-info1">
-                  <p className="">
+                  <p className="font-semibold font-sans">
                     {/* */}
 
                     <span> My Email </span>
@@ -91,24 +78,6 @@ const UserDashboard = () => {
                     <span className="text-4xl"> ➠ </span>
 
                     <span>{currentUser.email}</span>
-
-                    {/* */}
-                  </p>
-                </div>
-
-                <div className="text-4xl mb-5 responsive-dashboard-info1">
-                  <p className="">
-                    {/* */}
-
-                    <span> My Phone </span>
-
-                    <span className="text-4xl"> ➠ </span>
-
-                    <span className="leading-10">
-                      {currentUser.phone
-                        ? currentUser.phone
-                        : "Please update your phone number in your profile"}
-                    </span>
 
                     {/* */}
                   </p>
@@ -130,11 +99,13 @@ const UserDashboard = () => {
 
     /* */
   );
+
+  /* */
 };
 
 /* **************************************************************************************** */
-/* Using styled of styled-components we are styling the colors, minus-button, plus-button, 
-   and quantity and storing in a variable Wrapper. This Wrapper will be use to wrap the whole
+/* Using media-queries of styled of styled-components we are providing responsiveness for 
+   mobile size and storing in a variable Wrapper. This Wrapper will be use to wrap the whole 
    elements we want to return.
 */
 /* **************************************************************************************** */

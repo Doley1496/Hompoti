@@ -14,6 +14,7 @@ const userSchema = new mongoose.Schema(
 
     lastName: {
       type: String,
+      required: true,
     },
 
     email: {
@@ -22,13 +23,14 @@ const userSchema = new mongoose.Schema(
       unique: true,
     },
 
-    phone: {
-      type: Number,
-    },
-
     password: {
       type: String,
       required: true,
+    },
+
+    emailVerified: {
+      type: Boolean,
+      default: false,
     },
 
     avatar: {
@@ -36,6 +38,8 @@ const userSchema = new mongoose.Schema(
       default:
         "https://img.freepik.com/premium-vector/man-avatar-profile-picture-vector-illustration_268834-538.jpg",
     },
+
+    /* */
   },
 
   { timestamps: true } /* It will give us the created time of the new user. */

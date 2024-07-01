@@ -1,5 +1,7 @@
 /* */
 
+/* */
+
 import * as Yup from "yup";
 
 export const ValidationSchema = Yup.object({
@@ -30,15 +32,15 @@ export const ValidationSchema = Yup.object({
 
     .required("Please enter your password"),
 
-  phone: Yup.string()
-    .matches(/^\d{10}$/, "Phone number must be 10 digits")
-    .required("Please enter your phone number"),
-
-  address: Yup.string().required("Please enter your address"),
-
-  gender: Yup.string().required("Please enter your gender"),
-
   terms: Yup.string().required("Please accept the terms and conditions"),
+
+  // phoneNumber: Yup.string()
+  //   .matches(/^\d{10}$/, "Phone number must be 10 digits")
+  //   .required("Please enter your phone number"),
+
+  // address: Yup.string().required("Please enter your address"),
+
+  // gender: Yup.string().required("Please enter your gender"),
 
   //   confirmPassword: Yup.string()
   //     .oneOf([Yup.ref("password")], "Password must match")

@@ -4,17 +4,12 @@ import React from "react";
 
 import styled from "styled-components";
 
-import Layout from "../Components/Layout.jsx";
+import Layout from "../../Components/Layout.jsx";
 
-import PageNavigation from "../Components/PageNavigation.jsx";
+import PageNavigation from "../../Components/PageNavigation.jsx";
 
 const Policy = () => {
   /* */
-
-  /* Returning the content that we will display in the "/policy" route.
-     because for this route we have provide component {<PrivacyPolicy />}
-     ie. <Route path="/policy" element={<PrivacyPolicy />} /> 
-  */
 
   return (
     /* */
@@ -31,20 +26,7 @@ const Policy = () => {
 
         <PageNavigation title="Privacy policy" />
 
-        {/* 1st part contains image */}
-
-        {/* <div className="row m-3 p-3 justify-center ">
-          <div className="col-md-6 ">
-            <img
-              src="/newImages/contactus.jpeg"
-              alt="contactus"
-              className="rounded-xl ml-[80px] responsive-img"
-              style={{ width: "70%" }}
-            />
-          </div>
-        </div> */}
-
-        {/* 2nd part contains privacy policy information */}
+        {/* Contains privacy policy information */}
 
         <div className="row mt-4">
           {/* */}
@@ -621,8 +603,9 @@ const Policy = () => {
 };
 
 /* **************************************************************************************** */
-/* Using styled of styled-components we are styling the hero-section and storing in a variable 
-   Wrapper. This Wrapper will be use to wrap the whole elements we want to return.
+/* Using media-queries of styled of styled-components we are providing responsiveness for 
+   mobile size and storing in a variable Wrapper. This Wrapper will be use to wrap the whole 
+   elements we want to return.
 */
 /* **************************************************************************************** */
 

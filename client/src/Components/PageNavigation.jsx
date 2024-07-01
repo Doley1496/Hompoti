@@ -32,8 +32,9 @@ const PageNavigation = ({ title }) => {
 };
 
 /* **************************************************************************************** */
-/* Using styled of styled-components we are styling the page-navigation and storing in a 
-   variable Wrapper. This Wrapper will be use to wrap the whole elements we want to return.
+/* Using media-queries of styled of styled-components we are providing responsiveness for 
+   mobile size and storing in a variable Wrapper. This Wrapper will be use to wrap the whole 
+   elements we want to return.
 */
 /* **************************************************************************************** */
 

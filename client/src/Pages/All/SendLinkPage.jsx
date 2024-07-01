@@ -2,49 +2,28 @@
 
 import React, { useState, useRef } from "react";
 
-import Layout from "../Components/Layout.jsx";
+import Layout from "../../Components/Layout.jsx";
 
 import styled from "styled-components";
 
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 
 import { useSelector } from "react-redux";
 
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 let SERVER_URL = import.meta.env.VITE_SERVER_URL;
 
 export default function SendLink() {
   /* */
 
-  /* Destructing the id and the token from the link route that we created and send to the user's email
-     we will destruct using useParams() hook. 
-  */
-  const { id, token } = useParams();
-
-  /* Creating a variable for initializing useRef(). */
   const emailRef = useRef();
 
-  /* Creating a variable for initializing useDispatch(). */
-  const navigate = useNavigate();
+  const { loading } = useSelector((state) => state.user);
 
-  /* Using useSelector() hook we are destructing (importing) loading and error from the initial-state
-     (ie. loading and error) of the userSlice variable using the global state user.
-  */
-
-  const { loading, error } = useSelector((state) => state.user);
-
-  /* Creating a useState() hook to hold the value of the inputs fields email and password. */
   const [Inputs, setInputs] = useState({
     email: "",
   });
-
-  /* Creating a function with name change() and passing it in the onChange event of the email 
-     and the password fields of the SignIn form.
-     onChange() event will temporarily save the data of the input fields.
-      ie.. The onChange() event attribute fires the event when the element loses focus.
-  */
 
   const change = (event) => {
     /* */
@@ -54,35 +33,13 @@ export default function SendLink() {
     /* */
   };
 
-  /* Creating a function name  handleSendLink() and passing(calling) it in the onSubmit event of the form
-     ie... when we will submit the form this function will get execute and inside this 
-     function we are making an api call to the backend (ie. we are sending information to the backend) 
-     where we have written the logic to send a link to the user's email id so that when the user click
-     on that link it will open the reset-password page where the user can reset the password.  
-  */
-
   const handleSendLink = async (event) => {
     /* */
 
     try {
       /* */
 
-      /* Preventing the default refresh of the web page. */
       event.preventDefault();
-
-      /* Sending a POST fetch request to the following route to send the necessary information of the
-         user that we will received from the user entered in the inputs fields such as its email 
-         and password to the back-end so that we can SignIn the existing user 
-             
-         The browsers will only expose(show) the response to the frontend JavaScript code if the 
-         Access-Control-Allow-Credentials value is true.
-         Therefore to set Access-Control-Allow-Credentials value as true 1st we will have to pass the 
-         credentials as "include" and when we will pass its value as true inside the cors() function 
-         then it will expose the response to the frontend. 
-         After adding this only we will get the cookies,updated values etc.
-    
-         Credentials are cookies, authorization headers, or TLS client certificates.
-      */
 
       const res = await fetch(`${SERVER_URL}/api/auth/send-link`, {
         method: "POST",
@@ -91,45 +48,39 @@ export default function SendLink() {
         credentials: "include",
       });
 
-      /* After getting the response we will convert the response that we got into json format 
-         and save it in a variable say data. 
-      */
       const data = await res.json();
 
-      /* If we cannot successfully make an api call ie. when we will get success message as false
-         then we will display a toast error message and then simply return.
-      */
       if (data.success === false) {
         /* */
 
         toast.error(data.message);
 
         return;
+
+        /* */
       }
 
       toast.success(
         "Password reset link has been successfully send to your email id"
       );
 
-      /* Catching the error and dispatching it to the frontend. */
+      /* Catching the error and dispatching it. */
     } catch (error) {
       /* */
 
       toast.error("Something went wrong");
 
+      console.log(error);
+
       /* */
     }
+
+    /* */
   };
 
   /* ************************************************************************************* */
+  /* **********************************    return    ************************************* */
   /* ************************************************************************************* */
-  /* ************************************************************************************* */
-  /* ************************************************************************************* */
-
-  /* Returning the content that we will display in the "/resetPassword" route.
-     because for this route we have provide component {<ResetPasswordPage />}
-     ie. <Route path="/resetPassword" element={<ResetPasswordPage />} /> 
-  */
 
   return (
     /* */
@@ -143,18 +94,18 @@ export default function SendLink() {
         <div className="p-3 max-w-2xl mx-auto bg-indigo-400 rounded-lg">
           {/* */}
 
-          {/* <ToastContainer /> */}
-
           {/* Creating a heading for the signIn page. */}
 
-          <h1 className="text-3xl text-center font-bold font-sans my-4 mb-5 uppercase responsive-heading">
-            Reset your password
-          </h1>
+          <div className="">
+            <h1 className="text-3xl text-center font-bold font-sans my-4 mb-5 uppercase responsive-heading">
+              Reset your password
+            </h1>
 
-          <p className="text-[18px] font-sans font-bold text-center mb-4 text-slate-900 responsive-heading1">
-            Please enter your register email id below <br /> We will send a link
-            to your registered email id to reset your password
-          </p>
+            <p className="text-[18px] font-sans font-bold text-center mb-4 text-slate-900 responsive-heading1">
+              Please enter your register email id below <br /> We will send a
+              link to your registered email id to reset your password
+            </p>
+          </div>
 
           {/* Creating a form to get the user details from the signIn page. */}
 
@@ -221,9 +172,6 @@ export default function SendLink() {
             </button>
           </Link>
 
-          {/* If any errors occurs we will display that error in red text. */}
-          {/* <p className="text-red-700 mt-5">{error && error}</p> */}
-
           {/* */}
         </div>
 
@@ -235,12 +183,14 @@ export default function SendLink() {
 
     /* */
   );
+
+  /* */
 }
 
 /* **************************************************************************************** */
-/* Using styled of styled-components we are styling the images ie.. the images to be display
-   vertically and the seleced(click) image that is to be display horizontally and storing 
-   in a variable Wrapper. This Wrapper will be use to wrap the whole elements we want to return.
+/* Using media-queries of styled of styled-components we are providing responsiveness for 
+   mobile size and storing in a variable Wrapper. This Wrapper will be use to wrap the whole 
+   elements we want to return.
 */
 /* **************************************************************************************** */
 

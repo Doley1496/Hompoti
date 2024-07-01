@@ -4,31 +4,20 @@ import React, { useState } from "react";
 
 import styled from "styled-components";
 
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
-import { FaFacebook, FaInstagram, FaYoutube } from "react-icons/fa";
-
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 
 let SERVER_URL = import.meta.env.VITE_SERVER_URL;
 
-function Footer() {
+export default function Footer() {
   /* */
 
   const navigate = useNavigate();
 
-  /* Creating a useState() hook to hold the value of the inputs fields email and password. */
   const [Inputs, setInputs] = useState({
     email: "",
   });
-
-  /* *************************************************************************************** */
-  /* Creating a function with name change() and passing it in the onChange event of the email 
-       and the password fields of the SignIn form.
-       onChange() event will temporarily save the data of the input fields.
-          ie.. The onChange() event attribute fires the event when the element loses focus.
-    */
 
   const change = (event) => {
     /* */
@@ -38,26 +27,13 @@ function Footer() {
     /* */
   };
 
-  /* ***************************************************************************************************** */
-  /* Creating a function name handleEmailSubscription() and passing(calling) it in the onSubmit event of the 
-       form. 
-       ie... when we will click on the Subscribe button then this function will get execute and inside this 
-       function we have written the logic to submit the email provided in the form into our database.  
-    */
-
   const handleEmailSubscription = async (event) => {
     /* */
 
     try {
       /* */
 
-      /* Preventing the default refresh of the web page. */
       event.preventDefault();
-
-      /* Sending a POST fetch request to the following route to send the necessary information of the
-         user that we will received from the user entered in the inputs fields such as its email 
-         and password to the back-end so that we can SignIn the existing user. 
-      */
 
       const res = await fetch(`${SERVER_URL}/api/user/emailSubscription`, {
         method: "POST",
@@ -68,12 +44,8 @@ function Footer() {
         credentials: "include",
       });
 
-      /* After getting the response we will convert the response that we got into json format. */
       const data = await res.json();
 
-      /* If we cannot successfully make an api call ie. when we will get success message as false then
-           we will display a toast error message of the backend and simply return.
-        */
       if (data.success === false) {
         /* */
 
@@ -82,7 +54,6 @@ function Footer() {
         return;
       }
 
-      /* After successful signIn we will redirect the user to the home-page. */
       navigate("/emailSubscription");
 
       setInputs({
@@ -99,19 +70,24 @@ function Footer() {
 
       /* */
     }
+
+    /* */
   };
 
+  /* ************************************************************************************ */
+  /* ************************************************************************************ */
+  /* ************************************************************************************ */
+
   /* Returning the content to be displayed in the footer */
+
   return (
     /* */
 
     <Wrapper>
       {/* */}
 
-      <footer className="bg-slate-700 body-font shadow-lg mb-5 pt-[40px]">
+      <footer className="bg-slate-700 body-font shadow-lg mb-5 pt-[60px]">
         {/* */}
-
-        <ToastContainer className="text-2xl font-bold" />
 
         {/* ***************************** */}
         {/*    Footer Header section.     */}
@@ -383,7 +359,7 @@ function Footer() {
         {/* ***************** */}
         {/* Developer section */}
 
-        <div className="pt-[30px] pb-[40px]">
+        <div className="pt-[30px] pb-[80px]">
           <h3 className="text-gray-300 text-center text-[18px] font-sans font-bold mt-10 pb-[40px]">
             ✸
             <span className="ml-3 mr-3 ">
@@ -401,11 +377,14 @@ function Footer() {
 
     /* */
   );
+
+  /* */
 }
 
 /* **************************************************************************************** */
-/* Using styled of styled-components we are styling the hero-section and storing in a variable 
-   Wrapper. This Wrapper will be use to wrap the whole elements we want to return.
+/* Using media-queries of styled of styled-components we are providing responsiveness for 
+   mobile size and storing in a variable Wrapper. This Wrapper will be use to wrap the whole 
+   elements we want to return.
 */
 /* **************************************************************************************** */
 
@@ -519,5 +498,3 @@ const Wrapper = styled.section`
 
   /* */
 `;
-
-export default Footer;

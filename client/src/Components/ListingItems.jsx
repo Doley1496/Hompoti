@@ -135,12 +135,14 @@ export default function ListingItems({ listing }) {
 
     /* */
   );
+
+  /* */
 }
 
 /* **************************************************************************************** */
-/* Using styled of styled-components we are styling the images ie.. the images to be display
-   vertically and the seleced(click) image that is to be display horizontally and storing in   
-   a variable Wrapper. This Wrapper will be use to wrap the whole elements we want to return.
+/* Using media-queries of styled of styled-components we are providing responsiveness for 
+   mobile size and storing in a variable Wrapper. This Wrapper will be use to wrap the whole 
+   elements we want to return.
 */
 /* **************************************************************************************** */
 
@@ -182,7 +184,3 @@ const Wrapper = styled.section`
 
   /* */
 `;
-
-/* Truncate will remove extra letters if we don't have enough space. */
-
-/* To make a image little bigger when we hover over the image we can do that using. hover:scale-105 */

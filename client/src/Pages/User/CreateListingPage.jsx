@@ -24,24 +24,19 @@ let SERVER_URL = import.meta.env.VITE_SERVER_URL;
 export default function ListingPage() {
   /* */
 
-  /* Creating a variable for useNavigate(). */
   const navigate = useNavigate();
-
-  /* Using useSelector() hook we are destructing (importing) currentUser from the 
-     initial-state (ie. currentUser) of the userSlice variable using the global state user. 
-  */
 
   const { currentUser } = useSelector((state) => state.user);
 
-  /* Creating a useState() hook to hold the value of the files(images) to be uploaded and 
-     passing its initial value an array (empty-array) because it can contain many files. 
-  */
-
   const [files, setFiles] = useState([]);
 
-  /* Creating a useState() hook to store the data's of the input field's of the create-listing page
-     ex: url of the image,name,description etc.
-  */
+  const [fileUploadError, setFileUplaodError] = useState(false);
+
+  const [uploading, setUploading] = useState(false);
+
+  const [error, setError] = useState(false);
+
+  const [loading, setLoading] = useState(false);
 
   const [Inputs, setInputs] = useState({
     imageUrl: [],
@@ -58,36 +53,6 @@ export default function ListingPage() {
     furnished: false,
   });
 
-  /* Creating a useState() hook to store the error that can occur during uploading of the file 
-     in the array say fileUploadError and passing the initial value as false.
-  */
-
-  const [fileUploadError, setFileUplaodError] = useState(false);
-
-  /* Creating a useState() hook to store the boolean value of the uploading file.
-     ie. when file is uploading we will set it to true that will display text as Loading... 
-         in the upload button.
-     And initially we will not upload any image therefore we will take the value as false.
-  */
-
-  const [uploading, setUploading] = useState(false);
-
-  /* Creating a useState() hook to store the error in the array say error if any error occurs while 
-     creating the listing and passing its initial value as false as initially there will be no errors.
-  */
-  const [error, setError] = useState(false);
-
-  /* Creating a useState() hook to store the loading while creating the listing
-     in the array say loading and passing its initial value as false as initially we will not load anything.
-  */
-  const [loading, setLoading] = useState(false);
-
-  /* Creating a function with name change() and passing it in the onChange event of the name,description,
-     address,checkboxes,regular-price and discount-price of create-listing page.
-     onChange() event will temporarily save the data of the input fields.
-     ie.. The onChange() event attribute fires the event when the element loses focus.
-  */
-
   const change = (event) => {
     /* */
 
@@ -100,6 +65,7 @@ export default function ListingPage() {
     /* If the type of the field is number or text or textarea then we will set the Inputs array with the previous
        information and we will set the id of a particular field with the value of that particular field.
     */
+
     if (
       event.target.type === "number" ||
       event.target.type === "text" ||
@@ -131,24 +97,6 @@ export default function ListingPage() {
 
     /* */
   };
-
-  /* Creating a function name storeImage() and passing(calling) it inside push function of the
-     handleImageUpload() function.
-
-     Inside this function we will return a new-promise which will contain the parameters resolve and reject
-     so that we can resolve or reject if any errors occurs while uploading the files(images) because we will 
-     have to wait for the images to be uploaded in our firebase-storage.
-     
-     And inside this return function we will:
-
-      * 1st we will get the storage using a firebase method getStorage().
-      * 2nd Create a unique file name.
-      * 3rd create a storage-reference using a firebase method ref().
-      * 4th create a upload-task using a firebase method uploadBytesResumable().
-   
-     Once we created a upload-task we will set the upload-task by uploadTask.on() and pass 
-    "state_changed" and if any errors occurs we will reject that error and get the downloadUrl().
-  */
 
   const storeImage = async (file) => {
     /* */
@@ -206,7 +154,7 @@ export default function ListingPage() {
              converting the % to the integer form using Math.round() method. 
           */
 
-          // setFileUploadPercentage(Math.round(progress));
+          setFileUploadPercentage(Math.round(progress));
 
           console.log(`Upload is ${progress}% completed`);
         },
@@ -227,17 +175,15 @@ export default function ListingPage() {
             resolve(downloadURL);
           });
         }
+
+        /* */
       );
 
       /* */
     });
-  };
 
-  /* Creating a function name handleImageUpload() and passing(calling) it in the onClick event of the 
-     upload button.  ie... when we will click on the Upload button then this function will get execute 
-     and inside this function we have written the logic to upload all the files(images) of the properties 
-     into our application.
-  */
+    /* */
+  };
 
   const handleImageUpload = (event) => {
     /* */
@@ -251,15 +197,7 @@ export default function ListingPage() {
     if (files.length > 0 && files.length + Inputs.imageUrl.length < 7) {
       /* */
 
-      /* While uploading any image we want to show Loading... in the Upload button so we will set 
-         the uploading array of the useState() hook as true. 
-      */
-
       setUploading(true);
-
-      /* At starting there will be no errors so we will set the file-upload-error array of the 
-         useState() hook as false.
-      */
 
       setFileUplaodError(false);
 
@@ -312,16 +250,14 @@ export default function ListingPage() {
           setFileUplaodError(false);
 
           setUploading(false);
+
+          /* */
         })
         .catch((error) => {
           setFileUplaodError("Image upload failed (Max 5 MB size per image)");
         });
 
-      /* When length is out of the range we will set the file-upload-error with a message
-         ie..  "You can only upload 6 images per listing." and we will also set the uploading array of 
-                the useState() hook as false because after uploading any image we don't want to show 
-                Loading...
-      */
+      /* When length is out of the range we will set the file-upload-error with a message. */
     } else {
       /* */
 
@@ -329,15 +265,13 @@ export default function ListingPage() {
 
       setUploading(false);
 
+      console.log(error);
+
       /* */
     }
-  };
 
-  /* Creating a function name handleImageDelete() and passing(calling) it in the onClick event of the 
-     delete button of the image preview section below image-upload section.
-     ie... when we will click on the Delete button then this function will get execute and inside this 
-     function we have written the logic to delete that particular file(image) from the preview section. 
-  */
+    /* */
+  };
 
   const handleUploadedImageDelete = (index) => {
     /* */
@@ -354,13 +288,9 @@ export default function ListingPage() {
       ...Inputs,
       imageUrl: Inputs.imageUrl.filter((_, url) => url !== index),
     });
-  };
 
-  /* Creating a function name handleCreateListing() and passing(calling) it in the onSubmit() event of the
-     form. 
-     ie.. when we will click on the Create Listing button then this function will get execute and inside 
-     this function we have written the logic to create a new listing for that particular user. 
-  */
+    /* */
+  };
 
   const handleCreateListing = async (event) => {
     /* */
@@ -368,14 +298,13 @@ export default function ListingPage() {
     try {
       /* */
 
-      /* Preventing the default refresh of the web page. */
       event.preventDefault();
 
       /* Giving some conditions to create a listing. */
 
       /* The user must upload atleast one image for creating a listing.
-         So when the user tries to create a listing without uploading any image we will return an 
-         error message using the setError() function.
+         So when the user tries to create a listing without uploading any image we will  
+         return an error message using the setError() function.
       */
 
       if (Inputs.imageUrl.length < 1) {
@@ -391,39 +320,13 @@ export default function ListingPage() {
         return setError("Discount price must be lower then the regular price");
       }
 
-      /* Setting the error array of the useState() hook as false using the setError() function 
-         because initially there will be no errors. 
-      */
-
       setError(false);
 
-      /*  Setting the loading array of the useState() hook as true using the setLoading() function 
-          because when file is uploading we will display text as Loading... inside the upload button. 
-      */
-
       setLoading(true);
-
-      /* Sending a POST fetch request to the following route to send the necessary information of the
-         user that we will received from the user entered in the inputs fields such as its name,
-         description address etc. to the back-end so that we can create a listing for that particular user.
-         
-        The browsers will only expose(show) the response to the frontend JavaScript code if the 
-        Access-Control-Allow-Credentials value is true.
-        Therefore to set Access-Control-Allow-Credentials value as true 1st we will have to pass the 
-        credentials as "include" and when we will pass its value as true inside the cors() function 
-        then it will expose the response to the frontend. 
-        After adding this only we will get the cookies,updated values etc.
-
-        Credentials are cookies, authorization headers, or TLS client certificates.
-      */
 
       const res = await fetch(`${SERVER_URL}/api/listing/createListing`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-
-        /* In body along with all the data's of the inputs fields of create-listing page we will also
-           have to pass userRef because we need to know which user is creating the listing. 
-        */
 
         body: JSON.stringify({
           ...Inputs,
@@ -433,23 +336,9 @@ export default function ListingPage() {
         credentials: "include",
       });
 
-      /* After getting the response we will convert the response that we got into json format 
-         and save it in a variable say data. 
-      */
-
       const data = await res.json();
 
-      /*  After converting the response into json format and saving it in the data variable we will
-          set the loading array of the useState() hook as false using the setLoading() function 
-          because after sending the request we will not show Loading... inside the upload button.  
-      */
-
       setLoading(false);
-
-      /* If we cannot successfully make an api call ie. when we will get success message as false 
-         then we will set the error array of the useState() hook using setError() function with the
-         message received from the data variable.
-      */
 
       if (data.success === false) {
         /* */
@@ -463,18 +352,9 @@ export default function ListingPage() {
         /* */
       }
 
-      /* If we successfully make an api call (when we will get success message as true) 
-         (ie. after successfully creating the listing) we will redirect the user to the 
-         following route. 
-      */
-
       navigate(`/listing/${data?._id}`);
 
-      /* Catching the error and setting the error array of the useState() hook using the setError() 
-         function with the message that we received from the error we catched and also we will set the 
-         loading array of the useState() hook as false using the setLoading() function because if we 
-         catch any error then we will not show Loading... in the upload button.
-      */
+      /* Catching the error and displaying the error. */
     } catch (error) {
       /* */
 
@@ -482,19 +362,18 @@ export default function ListingPage() {
 
       setLoading(false);
 
+      console.log(error);
+
       /* */
     }
+
+    /* */
   };
 
-  /* ***************************************************************************************************** */
-  /* ***************************************************************************************************** */
-  /* ***************************************************************************************************** */
-  /* ***************************************************************************************************** */
-
-  /* Returning the content that we will display in the "/createListing" route.
-     because for this route we have provide component {<ListingPage />}
-     ie. <Route path="/createListing" element={<ListingPage />} /> 
-  */
+  /* **************************************************************************************** */
+  /* **************************************************************************************** */
+  /* **************************************************************************************** */
+  /* **************************************************************************************** */
 
   return (
     /* */
@@ -505,7 +384,10 @@ export default function ListingPage() {
       <Layout title={"Create-Listing Page"}>
         {/* */}
 
-        <h1 className="text-4xl font-bold text-center my-[40px] text-[#164416]">
+        <h1
+          className="text-[30px] font-bold text-center mt-[20px] mb-[60px] text-[#164416] 
+          responsive-main-heading"
+        >
           Create a Listing
         </h1>
 
@@ -518,49 +400,58 @@ export default function ListingPage() {
           {/* *********************************** */}
           {/* Creating a section for input fields */}
 
-          <div className="flex flex-col gap-4 flex-1 ">
+          <div className="flex flex-col gap-4 flex-1">
             {/* */}
 
             {/* ********************************* */}
             {/* Creating an input field for name. */}
 
-            <input
-              type="text"
-              placeholder="Enter Property Name"
-              className="border py-6 pl-3 rounded-lg text-[#21525e] text-2xl font-bold responsive-input-text"
-              id="name"
-              maxLength="62"
-              minLength="10"
-              required
-              onChange={change}
-              value={Inputs.name}
-            />
+            <div className="">
+              <input
+                type="text"
+                placeholder="Enter Property Name"
+                className="border py-6 pl-3 rounded-lg text-2xl font-bold w-[100%]
+                bg-[#D8CEE6] text-[#112c33] responsive-input-text"
+                id="name"
+                maxLength="62"
+                minLength="10"
+                required
+                onChange={change}
+                value={Inputs.name}
+              />
+            </div>
 
             {/* ******************************************* */}
             {/* Creating an textarea field for description. */}
 
-            <textarea
-              type="text"
-              placeholder="Enter Property Description"
-              className="border py-6 pl-3 rounded-lg text-[#21525e] text-2xl font-bold responsive-input-text"
-              id="description"
-              required
-              onChange={change}
-              value={Inputs.description}
-            />
+            <div className="">
+              <textarea
+                type="text"
+                placeholder="Enter Property Description"
+                className="border py-6 pl-3 rounded-lg text-2xl font-bold w-[100%] 
+                h-[130px] bg-[#D8CEE6] text-[#112c33] responsive-input-text"
+                id="description"
+                required
+                onChange={change}
+                value={Inputs.description}
+              />
+            </div>
 
             {/* ************************************ */}
             {/* Creating an input field for address. */}
 
-            <input
-              type="text"
-              placeholder="Enter Property Address"
-              className="border py-6 pl-3 rounded-lg text-[#21525e] text-2xl font-bold responsive-input-text"
-              id="address"
-              required
-              onChange={change}
-              value={Inputs.address}
-            />
+            <div className="">
+              <input
+                type="text"
+                placeholder="Enter Property Address"
+                className="border py-6 pl-3 rounded-lg text-2xl font-bold w-[100%]
+                bg-[#D8CEE6] text-[#112c33] responsive-input-text"
+                id="address"
+                required
+                onChange={change}
+                value={Inputs.address}
+              />
+            </div>
 
             {/* */}
 
@@ -570,7 +461,7 @@ export default function ListingPage() {
             <div className="flex gap-6 flex-wrap my-7">
               {/* */}
 
-              <h1 className="text-green-700 font-bold uppercase text-[19px] responsive-heading">
+              <h1 className="text-green-700 font-semibold font-sans uppercase text-[19px] responsive-heading">
                 Purpose:
               </h1>
 
@@ -620,7 +511,10 @@ export default function ListingPage() {
             <div className="flex gap-2 flex-wrap mb-[30px]">
               {/* */}
 
-              <h1 className="pr-5 text-green-700 font-bold text-[19px] uppercase responsive-heading">
+              <h1
+                className="pr-5 text-green-700 font-semibold font-sans text-[19px] uppercase 
+                responsive-heading"
+              >
                 Facilities:
               </h1>
 
@@ -681,15 +575,15 @@ export default function ListingPage() {
             <div className="flex gap-3 mb-3">
               {/* */}
 
-              <h1 className="text-green-700 font-bold text-[19px] uppercase responsive-heading">
+              <h1 className="text-green-700 font-semibold font-sans text-[19px] uppercase responsive-heading">
                 Rooms Features:
               </h1>
 
-              {/* *************************************************** */}
-              {/* Creating an input field for bedrooms and washrooms. */}
-
               <div className="flex items-center gap-2">
                 {/* */}
+
+                {/* *************************************************** */}
+                {/* Creating an input field for bedrooms and washrooms. */}
 
                 <input
                   type="number"
@@ -736,10 +630,16 @@ export default function ListingPage() {
             <div className="flex flex-col">
               {/* */}
 
+              {/* ******************************************* */}
+              {/* Creating an input field for discount-price. */}
+
               <div className="flex items-center gap-2 mb-3">
                 {/* */}
 
-                <h1 className="text-green-700 font-bold text-[19px] uppercase responsive-heading">
+                <h1
+                  className="text-green-700 font-semibold font-sans text-[19px] uppercase 
+                  responsive-heading"
+                >
                   Regular Price:
                 </h1>
 
@@ -780,7 +680,10 @@ export default function ListingPage() {
                 <div className="flex items-center gap-2">
                   {/* */}
 
-                  <h1 className="pr-5 text-green-700 font-bold text-[19px] uppercase responsive-heading">
+                  <h1
+                    className="pr-5 text-green-700 font-semibold font-sans text-[19px] uppercase 
+                    responsive-heading"
+                  >
                     Discount Price:
                   </h1>
 
@@ -824,6 +727,9 @@ export default function ListingPage() {
           <div className="flex flex-col flex-1 gap-4 ml-[40px] responsive-image-upload-heading">
             {/* */}
 
+            {/* ******************************************* */}
+            {/* Creating an heading for uploading an image. */}
+
             <p className="font-bold responsive-image-upload-heading1">
               <span className="font-bold text-3xl"> Images: </span>
               <span className="font-bold text-2xl text-gray-600 ml-2 responsive-image-upload-content">
@@ -842,7 +748,8 @@ export default function ListingPage() {
                 id="images"
                 accept="image/*"
                 multiple
-                className="p-3 border border-gray-300 rounded font-bold text-2xl responsive-image-upload-content"
+                className="p-3 border border-gray-300 rounded font-bold text-2xl 
+                responsive-image-upload-content"
                 onChange={(event) => {
                   setFiles(event.target.files);
                 }}
@@ -852,7 +759,7 @@ export default function ListingPage() {
                 type="button"
                 disabled={uploading}
                 onClick={handleImageUpload}
-                className="p-3 bg-green-700 border text-white rounded-lg uppercase hover:shadow-lg 
+                className=" bg-green-700 border text-white rounded-lg uppercase hover:shadow-lg 
                 disabled:opacity-80 w-[45%] text-[17px] font-bold responsive-upload-button1"
               >
                 {uploading ? "Uploading..." : "Upload"}
@@ -868,12 +775,9 @@ export default function ListingPage() {
               {fileUploadError && fileUploadError}
             </p>
 
-            {/* If we have one or more then one image in our Inputs array then we will dynamically access only 
-                the image-url's of the above Inputs array of the useState() using map function and pass all its 
-                url's data's in the url parameter and index's in index parameter.
-          
-                And we will display all the images present in the Inputs array as preview before final creation
-                and we will provide a delete button to delete a particular image if needed.
+            {/* ******************************************************************************* */}
+            {/* Displaying all the images present in the Inputs array as preview before final 
+                updation and we will provide a delete button to delete a particular image if needed.
             */}
 
             {Inputs.imageUrl.length > 0 &&
@@ -893,8 +797,8 @@ export default function ListingPage() {
                     onClick={() => {
                       handleUploadedImageDelete(index);
                     }}
-                    className="text-red-700 p-3 uppercase rounded-lg font-bold hover:opacity-95 
-                    disabled:opacity-80 text-2xl"
+                    className="text-red-700 p-3 uppercase rounded-lg font-semibold font-sans
+                    hover:opacity-95 disabled:opacity-80 text-2xl responsive-delete-button"
                   >
                     Delete
                   </button>
@@ -906,7 +810,7 @@ export default function ListingPage() {
 
             <button
               disabled={loading || uploading}
-              className="px-3 py-6 bg-slate-700 text-white rounded-lg uppercase hover:opacity-95 
+              className="px-3 py-[20px] bg-slate-700 text-white rounded-lg uppercase hover:opacity-95 
               disabled:opacity-80 text-3xl font-bold mt-4 w-[100%] responsive-create-button"
             >
               {loading ? "Creating..." : "Create Listing"}
@@ -933,12 +837,14 @@ export default function ListingPage() {
 
     /* */
   );
+
+  /* */
 }
 
 /* **************************************************************************************** */
-/* Using styled of styled-components we are styling the images ie.. the images to be display
-   vertically and the seleced(click) image that is to be display horizontally and storing in   
-   a variable Wrapper. This Wrapper will be use to wrap the whole elements we want to return.
+/* Using media-queries of styled of styled-components we are providing responsiveness for 
+   mobile size and storing in a variable Wrapper. This Wrapper will be use to wrap the whole 
+   elements we want to return.
 */
 /* **************************************************************************************** */
 
@@ -952,9 +858,14 @@ const Wrapper = styled.section`
   @media (max-width: ${({ theme }) => theme.media.mobile}) {
     /* */
 
+    .responsive-main-heading {
+      font-size: 26px;
+      margin-bottom: 30px;
+    }
+
     .responsive-input-text {
       font-size: 2rem;
-      padding: 17px;
+      padding: 19px;
     }
 
     .responsive-input-text1 {
@@ -962,7 +873,7 @@ const Wrapper = styled.section`
     }
 
     .responsive-heading {
-      font-size: 2rem;
+      font-size: 1.6rem;
       font-weight: bold;
     }
 
@@ -1001,10 +912,17 @@ const Wrapper = styled.section`
 
     .responsive-upload-button1 {
       width: 100%;
+      margin-top: 10px;
+      padding-top: 13px;
+      padding-bottom: 13px;
     }
 
     .responsive-gap {
       padding-left: -20px;
+    }
+
+    .responsive-delete-button {
+      font-size: 2rem;
     }
 
     /* */

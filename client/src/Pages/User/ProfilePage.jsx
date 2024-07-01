@@ -28,81 +28,52 @@ import {
   deleteUserStart,
   deleteUserSuccess,
   deleteUserFailure,
-} from "../../Redux/ReduxStore.js";
+} from "../../Redux/Actions/authActions.jsx";
 
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 
-let SERVER_URL = import.meta.env.VITE_SERVER_URL;
+import { Checkmark } from "react-checkmark";
+
+import { CgSpinner } from "react-icons/cg";
+
+let VITE_SERVER_URL = import.meta.env.VITE_SERVER_URL;
+
+let localStorageEmail = localStorage.getItem("email");
 
 export default function ProfilePage() {
   /* */
 
-  /* Creating a variable for useNavigate(). */
-  const navigate = useNavigate();
-
-  /* Creating a variable for useDispatch(). */
-  const dispatch = useDispatch();
-
   /* Creating a reference using inbuilt method useRef() of react and passing initial value as null. */
   const fileRef = useRef(null);
 
-  /* Creating a useState() hook to hold the value of the inputs fields ie. form such as the profile-photo
-     username email and password and passing its initial value as empty object because initilly its values
-     will be empty.
-  */
+  const navigate = useNavigate();
+
+  const dispatch = useDispatch();
 
   const [Inputs, setInputs] = useState({});
 
-  /* Using useSelector() hook we are destructing (importing) currentUser, loading and error from the 
-     initial-state (ie. currentUser) of the userSlice variable using the global state user. 
-  */
-
-  const { currentUser, loading, error } = useSelector((state) => state.user);
-
-  /* Creating a useState() hook to store the boolean value for the profile-updation in updatedMessage array.
-     ie. when user's profile gets sucessfully updated we will set it true using its setUpdatedMessage()
-     setter function and passing its initial value as false because initially we will not update the user.
-  */
+  const { currentUser, loading } = useSelector((state) => state.user);
 
   const [updatedMessage, setUpdatedMessage] = useState(false);
 
-  /* Creating a useState() hook to store the boolean value for the profile-deletion in deletedMessage array.
-     ie. when user's profile gets sucessfully deleted we will set it true using its setDeletedMessage()
-     setter function and passing its initial value as false because initially we will not delete the user.
-  */
-
   const [deletedMessage, setDeletedMessage] = useState(false);
-
-  /* Creating a useState() hook to store the file uploaded by the user in the file array and passing its 
-     initial value as undefined because initially we will not upload any file.
-  */
 
   const [file, setFile] = useState(undefined);
 
-  /* Creating a useState() hook to store the percentage of the uploading file in the filePercentage array
-     and passing its initial value as 0 because initially we will not upload any file.
-  */
-
   const [fileUploadPercentage, setFileUploadPercentage] = useState(0);
-
-  /* Creating a useState() hook to store the boolean value in the Error array ie. The error that 
-     can occur during any operations and passing its initial value as false because initially there 
-     will be no errors.
-  */
 
   const [Error, setError] = useState(false);
 
-  /* ***************************************************************************************************** */
-  /* ********************************          FUNCTIONS              ************************************ */
-  /* ***************************************************************************************************** */
-  /* ***************************************************************************************************** */
+  const [emailLoading, setEmailLoading] = useState(false);
 
-  /* Creating a function with name change() and passing it in the onChange event of the email 
-     and the password fields of the SignIn form.
-     onChange() event will temporarily save the data of the input fields.
-     ie.. The onChange() event attribute fires the event when the element loses focus.
-  */
+  const emailVerified = currentUser.emailVerified;
+
+  const currentUserEmail = localStorageEmail;
+
+  /* ************************************************************************************ */
+  /* *****************************   FUNCTIONS              ***************************** */
+  /* ************************************************************************************ */
+  /* ************************************************************************************ */
 
   const change = (event) => {
     /* */
@@ -123,56 +94,25 @@ export default function ProfilePage() {
     /* */
   };
 
-  /* Creating a function name handleDeleteUser() and passing(calling) it in the onClick event of the 
-     delete button. ie... when we will click on this delete button then this function will get execute and 
-     inside this function we have written the logic to delete all the details of the user from our database.  
-  */
-
   const handleDeleteUserAccount = async (event) => {
     /* */
 
     try {
       /* */
 
-      /* Preventing the default refresh of the web page. */
       event.preventDefault();
 
-      /* Using dispatch() function we are calling the reducer function ie.. deleteUserStart() function
-         created inside the userSlice variable.
-      */
       dispatch(deleteUserStart());
 
-      /* Sending a DELETE fetch request to the following route to delete a particular user on basis of 
-         this particular id.
-          
-        The browsers will only expose(show) the response to the frontend JavaScript code if the 
-        Access-Control-Allow-Credentials value is true.
-        Therefore to set Access-Control-Allow-Credentials value as true 1st we will have to pass the 
-        credentials as "include" and when we will pass its value as true inside the cors() function then 
-        it will expose the response to the frontend. 
-        After adding this only we will get the cookies,updated values(such update,delete get.) etc.
-
-        Credentials are cookies, authorization headers, or TLS client certificates.
-      */
-
       const res = await fetch(
-        `${SERVER_URL}/api/user/delete-profile/${currentUser._id}`,
+        `${VITE_SERVER_URL}/api/user/delete-profile/${currentUser._id}`,
         {
           method: "DELETE",
           credentials: "include",
         }
       );
 
-      /* After getting the response we will convert the response that we got into json format
-         and save it in a variable say data.
-      */
-
       const data = await res.json();
-
-      /* If we cannot successfully make an api call ie. when we will get success message as false then we will
-         dispatch the reducer function ie.. deleteUserFailure() function created inside the userSlice variable
-         and pass the failure message in it by using the dispatch() function and then simply return.
-      */
 
       if (data.success === false) {
         dispatch(deleteUserFailure(data.message));
@@ -180,27 +120,22 @@ export default function ProfilePage() {
         return;
       }
 
-      /* Else if we successfully make an api call then we will dispatch the reducer function
-         ie.. deleteUserSuccess() function created inside the userSlice variable and pass the data in it
-         by using the dispatch() function and we will redirect(navigate) the user to the home-page.
-      */
-
       dispatch(deleteUserSuccess(data));
 
-      /* After dispatch we will set the deletedMesssage useState() hook as true. */
       setDeletedMessage(true);
 
       /* clearing the local-storage */
       localStorage.clear();
 
-      /* After successful deletion we will redirect the user to the home-page. */
       navigate("/");
 
-      /* Catching the error and dispatching it to the frontend. */
+      /* Catching the error and dispatching it. */
     } catch (error) {
       /* */
 
       dispatch(deleteUserFailure(error.message));
+
+      console.log(error);
 
       /* */
     }
@@ -208,43 +143,18 @@ export default function ProfilePage() {
     /* */
   };
 
-  /* Creating a function name handleUpdateUser() and passing(calling) it in the onSubmit event of the 
-     update-form. ie... when we will click on the update button then this function will get execute and 
-     inside this function we have written the logic to submit all the details provided in the update-form 
-     to the backend to update the details of the user in our database.  
-  */
-
   const handleUpdateUserAccount = async (event) => {
     /* */
 
     try {
       /* */
 
-      /* Preventing the default refresh of the web page. */
       event.preventDefault();
 
-      /* Using dispatch() function we are calling the reducer function ie.. updateUserStart() function
-         created inside the userSlice variable.
-      */
       dispatch(updateUserStart());
 
-      /* Sending a POST fetch request to the following route to send the necessary information of the
-         user that we will received from the user entered in the inputs fields such as its email,username
-         and password to the back-end so that we can update the existing user and by default cookies are 
-         blocked in the browser.
-         
-        The browsers will only expose the response to the frontend JavaScript code if the 
-        Access-Control-Allow-Credentials value is true.
-        Therefore to set Access-Control-Allow-Credentials value as true 1st we will have to pass the 
-        credentials as "include" and when we will pass its value as true inside the cors() function then it 
-        will expose the response to the frontend. 
-        After adding this only we will get the cookies,updated values etc.
-        
-        Credentials are cookies, authorization headers, or TLS client certificates.
-      */
-
       const res = await fetch(
-        `${SERVER_URL}/api/user/update-profile/${currentUser._id}`,
+        `${VITE_SERVER_URL}/api/user/update-profile/${currentUser._id}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -253,15 +163,8 @@ export default function ProfilePage() {
         }
       );
 
-      /* After getting the response we will convert the response that we got into json format
-         and save it in a variable say data.
-      */
       const data = await res.json();
 
-      /* If we cannot successfully make an api call ie. when we will get success message as false then we will
-         dispatch the reducer function ie.. updateUserFailure() function created inside the userSlice variable
-         and pass the failure message in it by using the dispatch() function and then simply return.
-      */
       if (data.success === false) {
         /* */
 
@@ -274,44 +177,25 @@ export default function ProfilePage() {
         /* */
       }
 
-      /* Else if we successfully make an api call then we will dispatch the reducer function
-         ie.. updateUserSuccess() function created inside the userSlice variable and pass the data in it
-         by using the dispatch() function and we will redirect(navigate) the user to the home-page.
-      */
-
       dispatch(updateUserSuccess(data));
 
-      /* After dispatch we will set the successMesssage useState() hook as true. */
       setUpdatedMessage(true);
 
-      toast.success("Your profile updated successfully");
+      toast.success("Your profile is updated successfully");
 
-      /* Catching the error and dispatching it to the frontend. */
+      /* Catching the error and dispatching it. */
     } catch (error) {
       /* */
 
-      /* Dispatching the reducer function ie.. updateUserFailure() function created inside the userSlice
-         variable by using dispatch() function and passing the error message in it.
-      */
       dispatch(updateUserFailure(error.message));
+
+      console.log(error);
 
       /* */
     }
 
     /* */
   };
-
-  /* We are creating a function with name handleFileUpload() and passing the file inside it.
-      This function will have this things:
-   * 1st we will get the storage using a firebase method getStorage().
-   * 2nd Create a unique file name.
-   * 3rd create a storage-reference using a firebase method ref().
-   * 4th create a upload-task using a firebase method uploadBytesResumable().
-   
-     Once we created a upload-task we will set the upload-task by uploadTask.on() and pass 
-    "state_changed" and snapshot inside uploadTask.on().
-     Then we will get the error and then get the downloadUrl().
-  */
 
   const handleProfilePhotoUpload = (file) => {
     /* */
@@ -378,15 +262,69 @@ export default function ProfilePage() {
         });
       }
     );
+
+    /* */
   };
 
-  /* ************************************************************************************************ */
-  /* *************************************** useEffect() hooks ************************************** */
-  /* ************************************************************************************************ */
+  const sendVerificationMail = async (event) => {
+    /* */
 
-  /* Creating an useEffect() hook and if there is an image(file) then we will call handleProfilePhotoUpload() 
-     function and pass the file inside it to upload the file in initial time and passing the file in the
-     array as dependencies.
+    try {
+      /* */
+
+      /* Preventing the default refresh of the web page. */
+      event.preventDefault();
+
+      setEmailLoading(true);
+
+      const res = await fetch(`${VITE_SERVER_URL}/api/auth/send-email`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: currentUserEmail,
+        }),
+        credentials: "include",
+      });
+
+      const data = await res.json();
+
+      if (data.success === false) {
+        /* */
+
+        toast.error(data.message);
+
+        setEmailLoading(false);
+
+        return;
+
+        /* */
+      }
+
+      toast.success("Email verification link has been sent to your email id");
+
+      setEmailLoading(false);
+
+      /* Catching the error and dispatching it to the frontend. */
+    } catch (error) {
+      /* */
+
+      console.log(error);
+
+      toast.error("Something went wrong");
+
+      /* */
+    }
+
+    /* */
+  };
+
+  /* ****************************************************************************************** */
+  /* ********************************** useEffect() hooks ************************************* */
+  /* ****************************************************************************************** */
+
+  /* Creating an useEffect() hook and if there is an image(file) then we will call 
+     handleProfilePhotoUpload() function and pass the file inside it to upload the file in initial
+     time and passing the file in the array as dependencies.
   */
 
   useEffect(() => {
@@ -405,16 +343,10 @@ export default function ProfilePage() {
     /* */
   }, [file]);
 
-  /* ***************************************************************************************************** */
-  /* ***************************************************************************************************** */
-
-  /* ***************************************************************************************************** */
-  /* ***************************************************************************************************** */
-
-  /* Returning the content that we will display in the "/profile" route.
-     because for this route we have provide component {<ProfilePage />}
-     ie.   <Route path="/profile" element={<ProfilePage />} />
-  */
+  /* **************************************************************************************** */
+  /* **************************************************************************************** */
+  /* **************************************************************************************** */
+  /* **************************************************************************************** */
 
   return (
     /* */
@@ -430,7 +362,7 @@ export default function ProfilePage() {
         {/* */}
 
         <div
-          className="p-3 max-w-lg mx-auto mt-[40px]"
+          className="p-3 max-w-xl mx-auto mt-[40px]"
           style={{
             textAlign: "center",
             display: "block",
@@ -438,13 +370,12 @@ export default function ProfilePage() {
         >
           {/* */}
 
-          <ToastContainer className="text-2xl font-bold" />
-
           {/* **************************************** */}
           {/* Creating a heading for the profile page. */}
 
           <h1
-            className="text-4xl font-sans font-bold m-7 mt-5 uppercase text-[#a94c4c]"
+            className="text-[20px] font-sans font-bold my-4 uppercase text-[#a94c4c] 
+            responsive-heading-profileName"
             style={{
               textAlign: "center",
               display: "block",
@@ -466,13 +397,22 @@ export default function ProfilePage() {
             {/* ********************************************************************************* */}
             {/* Creating an input field to choose an image from the storage and making it hidden. */}
 
-            <input
-              type="file"
-              ref={fileRef}
-              hidden
-              accept="image/*"
-              onChange={(event) => setFile(event.target.files[0])}
-            />
+            <div className="">
+              <input
+                type="file"
+                ref={fileRef}
+                hidden
+                accept="image/*"
+                onChange={(event) => setFile(event.target.files[0])}
+              />
+
+              <h1
+                className="text-2xl font-semibold font-sans text-[#F3E1C0] mt-3 text-center 
+                responsive-heading"
+              >
+                My profile photo
+              </h1>
+            </div>
 
             {/* ************************************************* */}
             {/* Displaying the profile-image of the current user. */}
@@ -524,69 +464,122 @@ export default function ProfilePage() {
             {/* ****************************************** */}
             {/* Creating an input field for the firstName. */}
 
-            <input
-              type="text"
-              placeholder="Your First Name."
-              onChange={change}
-              id="firstName"
-              className="border p-3 py-4 mb-3 rounded-lg w-[100%]"
-              defaultValue={currentUser.firstName}
-            />
+            <div className="">
+              <input
+                type="text"
+                placeholder="Your First Name."
+                onChange={change}
+                id="firstName"
+                className="border p-3 py-4 mb-3 rounded-lg w-[100%]"
+                defaultValue={currentUser.firstName}
+              />
+            </div>
 
             {/* ***************************************** */}
             {/* Creating an input field for the lastName. */}
 
-            <input
-              type="text"
-              placeholder="Your Last Name."
-              onChange={change}
-              id="lastName"
-              className="border p-3 py-4 mb-3 rounded-lg w-[100%]"
-              defaultValue={currentUser.lastName}
-            />
+            <div className="">
+              <input
+                type="text"
+                placeholder="Your Last Name."
+                onChange={change}
+                id="lastName"
+                className="border p-3 py-4 mb-3 rounded-lg w-[100%]"
+                defaultValue={currentUser.lastName}
+              />
+            </div>
 
             {/* ************************************** */}
             {/* Creating an input field for the email. */}
 
-            <input
-              type="email"
-              placeholder="Enter Your Email."
-              onChange={change}
-              id="email"
-              className="border p-3 py-4 mb-3 rounded-lg w-[100%]"
-              defaultValue={currentUser.email}
-            />
+            <div className="flex">
+              {/* */}
 
-            {/* ************************************** */}
-            {/* Creating an input field for the phone. */}
+              <input
+                type="email"
+                id="email"
+                placeholder="Enter Your Email."
+                onChange={change}
+                value={currentUser.email ? currentUser.email : Inputs.email}
+                className="border bg-slate-600 text-white py-4 px-3 rounded-lg w-[100%] 
+                responsive-login-form"
+              />
 
-            <input
-              type="number"
-              placeholder="Enter Your Phone Number."
-              onChange={change}
-              id="phone"
-              className="border p-3 py-4 mb-3 rounded-lg w-[100%]"
-              defaultValue={currentUser.phone ? currentUser.phone : ""}
-            />
+              {emailVerified ? (
+                /* */
+
+                <div className="">
+                  <span className="pl-3 pt-4">Verified </span>
+                  <Checkmark size="30px" color="#223344" />
+                </div>
+              ) : (
+                /* */
+
+                <div className="pl-3">
+                  {/* */}
+
+                  <span className=""> Not Verified </span>
+
+                  <button
+                    onClick={sendVerificationMail}
+                    className="bg-emerald-900 text-2xl font-semibold font-sans text-red-300 py-3 
+                    rounded-lg uppercase hover:opacity-95 disabled:opacity-80 px-3 mx-auto w-[auto]
+                    responsive-button "
+                  >
+                    {emailLoading && (
+                      <CgSpinner
+                        size={20}
+                        className="mx-auto mb-2 animate-spin "
+                      />
+                    )}
+                    Verify Email
+                  </button>
+
+                  {/* */}
+                </div>
+
+                /* */
+              )}
+
+              {/* */}
+            </div>
+
+            {/* ******************************************** */}
+            {/* Creating an input field for the phoneNumber. */}
+
+            {/* <div className="">
+              <input
+                type="number"
+                placeholder="Enter Your Phone Number."
+                onChange={change}
+                id="phoneNumber"
+                className="border p-3 py-4 mb-3 rounded-lg w-[100%]"
+                defaultValue={
+                  currentUser.phoneNumber ? currentUser.phoneNumber : ""
+                }
+              />
+            </div> */}
 
             {/* ***************************************** */}
             {/* Creating an input field for the password. */}
 
-            <input
-              type="password"
-              placeholder="Enter Your Password"
-              onChange={change}
-              id="password"
-              className="border p-3 py-4 mb-3 rounded-lg w-[100%]"
-            />
+            <div className="">
+              <input
+                type="password"
+                placeholder="Create Your Password"
+                onChange={change}
+                id="password"
+                className="border p-3 py-4 mb-3 rounded-lg w-[100%]"
+              />
+            </div>
 
             {/* ***************************************************** */}
             {/* Creating a button to Update the user-profile details. */}
 
             <button
               disabled={loading}
-              className="bg-slate-700 text-white rounded-lg p-3 mb-5 uppercase hover:opacity-95
-              disabled:opacity-80 w-[100%] mt-4 py-4 font-bold"
+              className="bg-slate-700 text-white rounded-lg mb-5 uppercase hover:opacity-95
+              disabled:opacity-80 w-[100%] text-[20px] mt-4 py-[18px] font-bold font-sans"
             >
               {loading ? "Loading..." : "Update"}
             </button>
@@ -605,7 +598,8 @@ export default function ProfilePage() {
             }}
           >
             <button
-              className="text-red-700 cursor-pointer font-bold hover:underline text-3xl responsive-delete-button"
+              className="text-red-700 cursor-pointer font-semibold font-sans hover:underline text-3xl 
+              mt-[20px] responsive-delete-button"
               onClick={handleDeleteUserAccount}
             >
               Delete Account
@@ -640,11 +634,6 @@ export default function ProfilePage() {
             {deletedMessage ? "User is deleted successfully" : ""}
           </p>
 
-          {/* ************************************************************ */}
-          {/* If any errors occurs we will display that error in red text. */}
-
-          <p className="text-red-700 text-3xl mt-3 ml-8">{error && error}</p>
-
           {/* */}
         </div>
 
@@ -656,11 +645,13 @@ export default function ProfilePage() {
 
     /* */
   );
+
+  /* */
 }
 
 /* **************************************************************************************** */
-/* Using styled of styled-components we are styling how to display the products in grid view
-   and storing in a variable Wrapper. This Wrapper will be use to wrap the whole
+/* Using media-queries of styled of styled-components we are providing responsiveness for 
+   mobile size and storing in a variable Wrapper. This Wrapper will be use to wrap the whole 
    elements we want to return.
 */
 /* **************************************************************************************** */
@@ -685,8 +676,16 @@ const Wrapper = styled.section`
     }
 
     .responsive-delete-button {
-      margin: auto;
+      margin: 20px;
+      font-size: 2.6rem;
+    }
+
+    .responsive-heading {
       font-size: 2rem;
+    }
+
+    .responsive-heading-profileName {
+      font-size: 3rem;
     }
 
     /* */

@@ -25,3 +25,31 @@ export const authActionTypes = {
 
   /* */
 };
+
+export const billingActionTypes = {
+  /* */
+
+  SET_BILLING_DETAILS: "SET_BILLING_DETAILS",
+
+  CREATE_BILLING_SUCCESS: "CREATE_BILLING_SUCCESS",
+
+  CREATE_BILLING_FAILURE: "CREATE_BILLING_FAILURE",
+
+  /* */
+};
+
+export const listingsActionTypes = {
+  /* */
+
+  SET_LISTINGS_DETAILS: "SET_LISTINGS_DETAILS",
+
+  /* */
+};
+
+export const verificationActionTypes = {
+  /* */
+
+  DOING_VERIFICATION_START: "DOING_VERIFICATION_START",
+
+  /* */
+};

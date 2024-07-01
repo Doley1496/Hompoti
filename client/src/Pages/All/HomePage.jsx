@@ -4,11 +4,11 @@ import React, { useState, useEffect } from "react";
 
 import styled from "styled-components";
 
-import Layout from "../Components/Layout.jsx";
+import Layout from "../../Components/Layout.jsx";
 
 import { Link } from "react-router-dom";
 
-import ListingItems from "./../Components/ListingItems.jsx";
+import ListingItems from "../../Components/ListingItems.jsx";
 
 let SERVER_URL = import.meta.env.VITE_SERVER_URL;
 
@@ -108,53 +108,17 @@ export default function HomePage() {
     "images/resort10.jpg",
   ];
 
-  /* Creating a useState() hook to store the boolean value in the Error array ie. The error that 
-     can occur during any operations and passing its initial value as false because initially there 
-     will be no errors.
-  */
-
-  const [error, setError] = useState(false);
-
-  /* Creating a useState() hook to store the listings with offers and passing its initial value an 
-     array (empty-array) because there can be many listing with offers. 
-  */
-
   const [offerListings, setOfferListings] = useState([]);
-
-  /* Creating a useState() hook to store the listings posted for selling and passing its initial value an 
-     array (empty-array) because there can be many listing for sell. 
-  */
 
   const [sellListings, setSellListings] = useState([]);
 
-  /* Creating a useState() hook to store the listings posted for rent and passing its initial value an 
-     array (empty-array) because there can be many listing for rent. 
-  */
-
   const [rentListings, setRentListings] = useState([]);
-
-  /* Creating a function name fetchOfferListings() and passing(calling) it in the useEffect() hook so 
-     that in initial time we can get all the listings that is posted with offers by different owners in 
-     the home-page.   
-  */
 
   const fetchOfferListings = async () => {
     /* */
 
     try {
       /* */
-
-      /* Sending a GET fetch request to the following route to get the listings of the user.
-             
-          The browsers will only expose(show) the response to the frontend JavaScript code if the
-          Access-Control-Allow-Credentials value is true.
-          Therefore to set Access-Control-Allow-Credentials value as true 1st we will have to pass the
-          credentials as "include" and when we will pass its value as true inside the cors() function then
-          it will expose the response to the frontend.
-          After adding this only we will get the cookies,updated values etc.
-             
-          Credentials are cookies, authorization headers, or TLS client certificates.
-      */
 
       const res = await fetch(
         `${SERVER_URL}/api/listing/getAllSearchListings?offer=true&limit=10`,
@@ -164,58 +128,29 @@ export default function HomePage() {
         }
       );
 
-      /* After getting the response we will convert the response that we got into the json format
-         and save it in a variable say data.
-      */
       const data = await res.json();
-
-      /* After getting and converting the response into json format.
-                   
-          * We will set the offerListings array of the useState() hook using the setOfferListings() 
-            function with the data's of the data variable where we saved the response by converting 
-            it into the json format.
-             
-          * And we will call the fetchRentListings() function so that we can get all listings for rent.
-      */
 
       setOfferListings(data);
 
       fetchRentListings();
 
-      /* Catching the error and setting the error array of the useState() hook using the setError() 
-         function with the message that we received from the error we catched.
-      */
+      /* Catching the error and displaying it. */
     } catch (error) {
       /* */
 
-      setError(error.message);
+      console.log(error);
 
       /* */
     }
-  };
 
-  /* Creating a function name fetchRentListings() and passing(calling) it in the useEffect() hook so 
-     that in initial time we can get all the listings that is posted for rent by different owners in 
-     the home-page.   
-  */
+    /* */
+  };
 
   const fetchRentListings = async () => {
     /* */
 
     try {
       /* */
-
-      /* Sending a GET fetch request to the following route to get the listings of the user.
-             
-          The browsers will only expose(show) the response to the frontend JavaScript code if the
-          Access-Control-Allow-Credentials value is true.
-          Therefore to set Access-Control-Allow-Credentials value as true 1st we will have to pass the
-          credentials as "include" and when we will pass its value as true inside the cors() function then
-          it will expose the response to the frontend.
-          After adding this only we will get the cookies,updated values etc.
-             
-          Credentials are cookies, authorization headers, or TLS client certificates.
-      */
 
       const res = await fetch(
         `${SERVER_URL}/api/listing/getAllSearchListings?type=rent&limit=10`,
@@ -226,59 +161,29 @@ export default function HomePage() {
         }
       );
 
-      /* After getting the response we will convert the response that we got into the json format
-         and save it in a variable say data.
-      */
-
       const data = await res.json();
-
-      /* After getting and converting the response into json format.
-                   
-          * We will set the rentListings array of the useState() hook using the setRentListings() 
-            function with the data's of the data variable where we saved the response by converting 
-            it into the json format.
-             
-          * And we will call the fetchSellListings() function so that we can get all listings for sell.
-      */
 
       setRentListings(data);
 
       fetchSellListings();
 
-      /* Catching the error and setting the error array of the useState() hook using the setError() 
-         function with the message that we received from the error we catched.
-      */
+      /* Catching the error and displaying it. */
     } catch (error) {
       /* */
 
-      setError(error.message);
+      console.log("Something went wrong", error);
 
       /* */
     }
-  };
 
-  /* Creating a function name fetchSellListings() and passing(calling) it in the useEffect() hook so 
-     that in initial time we can get all the listings that is posted for selling by different owners in 
-     the home-page.   
-  */
+    /* */
+  };
 
   const fetchSellListings = async () => {
     /* */
 
     try {
       /* */
-
-      /* Sending a GET fetch request to the following route to get the listings of the user.
-             
-          The browsers will only expose(show) the response to the frontend JavaScript code if the
-          Access-Control-Allow-Credentials value is true.
-          Therefore to set Access-Control-Allow-Credentials value as true 1st we will have to pass the
-          credentials as "include" and when we will pass its value as true inside the cors() function then
-          it will expose the response to the frontend.
-          After adding this only we will get the cookies,updated values etc.
-             
-          Credentials are cookies, authorization headers, or TLS client certificates.
-      */
 
       const res = await fetch(
         `${SERVER_URL}/api/listing/getAllSearchListings?type=sell&limit=10`,
@@ -289,45 +194,25 @@ export default function HomePage() {
         }
       );
 
-      /* After getting the response we will convert the response that we got into the json format
-         and save it in a variable say data.
-      */
       const data = await res.json();
-
-      /* After getting and converting the response into json format.
-                   
-          * We will set the sellListings array of the useState() hook using the setSellListings() 
-            function with the data's of the data variable where we saved the response by converting 
-            it into the json format.
-      */
 
       setSellListings(data);
 
-      /* Catching the error and setting the error array of the useState() hook using the 
-         setError() function with the message that we received from the error we catched.
-      */
+      /* Catching the error and displaying it. */
     } catch (error) {
       /* */
 
-      setError(error.message);
+      console.log("Something went wrong", error);
 
       /* */
     }
+
+    /* */
   };
 
-  /* ************************************************************************************************ */
-  /* ************************************   useEffect() hooks  ************************************** */
-  /* ************************************************************************************************ */
-
-  /* Creating an useEffect() hook and calling the functions :
-
-     * fetchRentListings();
-     * fetchSellListings();
-     * fetchOfferListings();
-     
-     So that in initial time we can get all listings for rent, for sell and the listings which has offers.
-     and passing an empty array as dependencies.
-  */
+  /* ************************************************************************************* */
+  /* ********************************** useEffect() hooks ******************************** */
+  /* ************************************************************************************* */
 
   useEffect(() => {
     /* */
@@ -339,15 +224,9 @@ export default function HomePage() {
     /* */
   }, []);
 
-  /* *********************************************************************************************** */
-  /* *********************************************************************************************** */
-  /* *********************************************************************************************** */
-  /* *********************************************************************************************** */
-
-  /* Returning the content that we will display in the "/" route.
-     because for this route we have provided component {<HomePage />}
-     ie.. <Route path="/" element={<HomePage />} />
-  */
+  /* ************************************************************************************* */
+  /* **********************************    return    ************************************* */
+  /* ************************************************************************************* */
 
   return (
     /* */
@@ -359,8 +238,10 @@ export default function HomePage() {
         <div>
           {/* */}
 
-          {/* ************************************************************************************************* */}
-          {/* Creating the top section of the home-page with some heading, and a link to go to the search page. */}
+          {/* ************************************************************************* */}
+          {/* Creating the top section of the home-page with some heading, and a link to go 
+              to the search page. 
+          */}
 
           <div className="flex flex-col gap-6 p-28 px-8 max-w-6xl mx-auto">
             {/* */}
@@ -395,7 +276,8 @@ export default function HomePage() {
             {HomeListings.map((listings, index) => (
               <div className="col-lg-3 col-md-4 hover:no-underline" key={index}>
                 <div
-                  className="border rounded-lg overflow-hidden cursor-pointer h-[460px] responsive-homeListings"
+                  className="border rounded-lg overflow-hidden cursor-pointer h-[460px] 
+                  responsive-homeListings"
                   style={{ boxShadow: "0 0 10px rgba(0,0,0,0.5)" }}
                 >
                   <img
@@ -544,12 +426,14 @@ export default function HomePage() {
 
     /* */
   );
+
+  /* */
 }
 
 /* **************************************************************************************** */
-/* Using styled of styled-components we are styling the images ie.. the images to be display
-   vertically and the seleced(click) image that is to be display horizontally and storing in   
-   a variable Wrapper. This Wrapper will be use to wrap the whole elements we want to return.
+/* Using media-queries of styled of styled-components we are providing responsiveness for 
+   mobile size and storing in a variable Wrapper. This Wrapper will be use to wrap the whole 
+   elements we want to return.
 */
 /* **************************************************************************************** */
 

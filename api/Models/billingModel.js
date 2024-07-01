@@ -3,7 +3,7 @@
 import mongoose from "mongoose";
 
 /* Creating mongoose schema. */
-const contactSchema = new mongoose.Schema(
+const billingSchema = new mongoose.Schema(
   {
     /* */
 
@@ -22,17 +22,36 @@ const contactSchema = new mongoose.Schema(
       required: true,
     },
 
-    phoneNumber: {
-      type: Number,
-      required: true,
-    },
-
-    message: {
+    phone: {
       type: String,
       required: true,
     },
 
-    /* creating relationship between two models ie. contactModels and userModels with the help
+    streetAddress: {
+      type: String,
+      default: "",
+      required: true,
+    },
+
+    city: {
+      type: String,
+      default: "",
+      required: true,
+    },
+
+    state: {
+      type: String,
+      default: "",
+      required: true,
+    },
+
+    pincode: {
+      type: Number,
+      default: "",
+      required: true,
+    },
+
+    /* Creating relationship between two models ie. todoModels and userModels with the help
        of the mongoose model name.
     */
     userId: [
@@ -49,7 +68,6 @@ const contactSchema = new mongoose.Schema(
 );
 
 /* Creating mongoose model and exporting it. */
+const Billing = mongoose.model("Billing", billingSchema);
 
-const Contact = mongoose.model("Contact", contactSchema);
-
-export default Contact;
+export default Billing;

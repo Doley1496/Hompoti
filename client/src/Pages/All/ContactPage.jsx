@@ -2,9 +2,9 @@
 
 import React, { useState } from "react";
 
-import Layout from "../Components/Layout";
+import Layout from "../../Components/Layout.jsx";
 
-import PageNavigation from "../Components/PageNavigation.jsx";
+import PageNavigation from "../../Components/PageNavigation.jsx";
 
 import styled from "styled-components";
 
@@ -12,8 +12,7 @@ import { Link, useNavigate, NavLink } from "react-router-dom";
 
 import { useSelector } from "react-redux";
 
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 
 let SessionId = localStorage.getItem("id");
 
@@ -22,17 +21,9 @@ let SERVER_URL = import.meta.env.VITE_SERVER_URL;
 export default function ContactPage() {
   /* */
 
-  /* Creating a variable for useNavigate(). */
   const navigate = useNavigate();
 
-  /* Using useSelector() hook we are destructing (importing) currentUser, loading and error from the 
-     initial-state (ie. currentUser) of the userSlice variable using the global state user. 
-  */
   const { currentUser } = useSelector((state) => state.user);
-
-  /* Creating a useState() hook to store the data's of the input field's of the contact page
-     ex: firstName, lastName, email, etc.
-  */
 
   const [Inputs, setInputs] = useState({
     firstName: currentUser ? currentUser.firstName : "",
@@ -42,12 +33,6 @@ export default function ContactPage() {
     message: "",
   });
 
-  /* Creating a function with name change() and passing it in the onChange event of the email 
-     and the password fields of the SignIn form.
-     onChange() event will temporarily save the data of the input fields.
-     ie.. The onChange() event attribute fires the event when the element loses focus.
-  */
-
   const change = (event) => {
     /* */
 
@@ -56,33 +41,18 @@ export default function ContactPage() {
     /* */
   };
 
-  /* Creating a function name handleSignUp() and passing(calling) it in the onSubmit event of the form. 
-     ie... when we will click on the SignUp button then this function will get execute and inside this 
-     function we have written the logic to submit all the details provided in the SignUp form into our 
-     database.  
-  */
-
   const handleContactForm = async (event) => {
     /* */
 
     try {
       /* */
 
-      /* Preventing the default refresh of the web page. */
       event.preventDefault();
-
-      /* Sending a POST fetch request to the following route to send the necessary information of the
-         user that we will received from the user entered in the inputs fields such as its email 
-         and password to the back-end so that we can SignIn the existing user. 
-      */
 
       const res = await fetch(`${SERVER_URL}/api/auth/contact`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
 
-        /* In body along with all the data's of the inputs fields of contact page we will also
-           have to pass SessionId because we need to know which user is creating the todoList. 
-        */
         body: JSON.stringify({
           ...Inputs,
           id: SessionId,
@@ -91,24 +61,21 @@ export default function ContactPage() {
         credentials: "include",
       });
 
-      /* After getting the response we will convert the response that we got into json format. */
       const data = await res.json();
 
-      /* If we cannot successfully make an api call ie. when we will get success message as false then
-         we will display a toast error message of the backend and simply return.
-      */
       if (data.success === false) {
         /* */
 
         toast.error(data.message);
 
         return;
+
+        /* */
       }
 
-      /* After successful signIn we will redirect the user to the home-page. */
       navigate("/complaintSuccess");
 
-      /* Catching the error and dispatching it to the frontend. */
+      /* Catching the error and dispatching it. */
     } catch (error) {
       /* */
 
@@ -116,16 +83,13 @@ export default function ContactPage() {
 
       /* */
     }
+
+    /* */
   };
 
-  /* ***************************************************************************************************** */
-  /* ***************************************************************************************************** */
-  /* ***************************************************************************************************** */
-
-  /* Returning the content that we will display in the "/contact" route.
-     because for this route we have provide component {<ContactPage />}
-     ie. <Route path="/contact" element={<ContactPage />} /> 
-  */
+  /* ************************************************************************************* */
+  /* **********************************    return    ************************************* */
+  /* ************************************************************************************* */
 
   return (
     /* */
@@ -133,14 +97,12 @@ export default function ContactPage() {
     <Wrapper className="box-wrapper">
       {/* */}
 
-      <div className="mb-5 mt-[-30px] ml-[-80px] mr-[-80px]">
+      <div className="mb-5 mt-[-40px] mx-[-80px] responsive-pagination">
         <PageNavigation title="Contact Us" />
       </div>
 
-      <Layout title={"Contact-Page"} className="pb-[40px]">
+      <Layout title={"Contact-Page"} className="mb-[80px]">
         {/* */}
-
-        {/* <ToastContainer className="text-2xl font-bold" /> */}
 
         <h2 className="text-center text-5xl m-4 mb-5 text-[#800000] font-sans font-bold">
           Send us a message
@@ -156,6 +118,7 @@ export default function ContactPage() {
           referrerPolicy="no-referrer-when-downgrade"
         />
 
+        {/* ******************** */}
         {/* Part 1 Contact Info. */}
 
         <div className="info-wrap mt-5 responsive-main-contact">
@@ -168,7 +131,7 @@ export default function ContactPage() {
           <p className="font-bold font-sans leading-10 mb-5 text-[#CDD193] text-2xl responsive-main-contact">
             For any additional information, please contact us at the below
             contact details or send us a message in the contact form. Please
-            call between: 10 am and 5 pm (IST) on all working days.
+            call between: 10 am and 8 pm (IST) on all working days.
           </p>
 
           {/********************************************* */}
@@ -231,29 +194,20 @@ export default function ContactPage() {
             <Link
               to="https://facebook.com/"
               className="fab fa-facebook bg-green-700 text-white p-3 mr-6 hover:bg-pink-500 
-              text-3xl rounded-3xl inline-block"
+              text-3xl rounded-2xl inline-block"
             />
 
             <Link
               to="https://www.instagram.com/"
               className="fab fa-instagram bg-green-700 text-white p-3 mr-6 hover:bg-pink-500
-              text-3xl rounded-3xl inline-block "
+              text-3xl rounded-2xl inline-block "
             />
 
             <Link
               to="https://twitter.com/"
               className="fab fa-twitter bg-green-700 text-white p-3 mr-6 hover:bg-pink-500
-              text-3xl rounded-3xl inline-block "
+              text-3xl rounded-2xl inline-block "
             />
-
-            {/* <li className="inline-block mr-5">
-              <a href="#">
-                <i
-                  className="fab fa-twitter bg-green-700 text-white p-3 mr-3 hover:bg-pink-500
-                  text-3xl rounded-3xl"
-                />
-              </a>
-            </li> */}
 
             {/* */}
           </ul>
@@ -261,29 +215,31 @@ export default function ContactPage() {
           {/* */}
         </div>
 
+        {/* *********************** */}
         {/* Part 2 Message writing. */}
 
-        <div className="form-wrap border border-black rounded-3xl mt-5 mb-[80px]">
+        <div className="form-wrap border border-black rounded-3xl mt-5 mb-[70px]">
           {/* */}
 
           <form onSubmit={handleContactForm}>
-            <h2 className="text-3xl text-center text-[#CDD193] font-bold m-5">
+            {/* */}
+
+            <h2
+              className="text-[25px] text-center text-[#CDD193] font-bold m-5 
+              responsive-messageWriting-heading"
+            >
               For any complaint send us a message
             </h2>
 
             <div className="mb-3">
               {/* */}
 
-              {/* When we use defaultValue then we cannot give space between the quotes if we give 
-                  then the placeholder's value will not be shown in the input field.
-              */}
-
               <div className="form-group">
                 <input
                   type="text"
                   name="firstName"
                   id="firstName"
-                  className="font-semibold p-4 bg-transparent w-full text-[#D8CEE6] text-3xl"
+                  className="font-semibold py-4 px-3 bg-transparent w-full text-[#D8CEE6] text-3xl"
                   placeholder="First Name"
                   required
                   onChange={change}
@@ -326,7 +282,7 @@ export default function ContactPage() {
                   className="font-semibold p-4 bg-transparent w-full text-[#D8CEE6] text-3xl"
                   required
                   onChange={change}
-                  defaultValue={currentUser ? currentUser.phone : ""}
+                  defaultValue={currentUser ? currentUser.phoneNumber : ""}
                 />
               </div>
 
@@ -346,13 +302,17 @@ export default function ContactPage() {
               {/* */}
             </div>
 
-            <input
-              type="submit"
-              defaultValue="Send Message"
-              className="w-full text-centen text-3xl border p-4 bg-slate-700 font-semibold
-            text-blue-400 hover:bg-pink-900 rounded-2xl transition:300 mt-4 mb-[67px]"
-              name="submit"
-            />
+            <div className="">
+              <input
+                type="submit"
+                defaultValue="Send Message"
+                className="w-[100%] text-centen text-[20px] border py-[18px] bg-slate-700 font-semibold
+              text-blue-400 hover:bg-pink-900 rounded-2xl transition:300 mt-4 mb-[29px]"
+                name="submit"
+              />
+            </div>
+
+            {/* */}
           </form>
 
           {/* */}
@@ -366,11 +326,14 @@ export default function ContactPage() {
 
     /* */
   );
+
+  /* */
 }
 
 /* **************************************************************************************** */
-/* Using styled of styled-components we are styling the footer and storing in a variable Wrapper.
-   This Wrapper will be use to wrap the whole elements we want to return.
+/* Using media-queries of styled of styled-components we are providing responsiveness for 
+   mobile size and storing in a variable Wrapper. This Wrapper will be use to wrap the whole 
+   elements we want to return.
 */
 /* **************************************************************************************** */
 
@@ -379,6 +342,11 @@ const Wrapper = styled.section`
 
   @media (max-width: ${({ theme }) => theme.media.mobile}) {
     /* */
+
+    .responsive-pagination {
+      margin-left: auto;
+      margin-right: auto;
+    }
 
     .responsive-heading {
       margin: auto;
@@ -398,12 +366,17 @@ const Wrapper = styled.section`
     }
 
     .responsive-contact {
-      padding-left: 80px;
-      padding-bottom: 15px;
+      padding-left: 79px;
+      margin-bottom: 40px;
+      padding-bottom: 40px;
     }
 
     .responsive-contact1 {
       margin-left: 90px;
+    }
+
+    .responsive-messageWriting-heading {
+      font-size: 2.4rem;
     }
 
     /* */

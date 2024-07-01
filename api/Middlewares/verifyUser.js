@@ -8,23 +8,26 @@ export const verifyToken = (req, res, next) => {
   /* */
 
   /*  We will get the token from the cookie and we directly cannot get any data from the cookie.
-      So in-order to get any data from the cookie we need to install a package call cookie-parser in the 
-      api side. 
+      So in-order to get any data from the cookie we need to install a package call cookie-parser in 
+      the api side. 
+
+      Getting the token from the cookie using cookie-parser. Inside the cookie we have provided the 
+      name of the token as access_token so we will use access_token as the token name. 
   */
 
-  /* Getting the token from the cookie using cookie-parser. Inside the cookie we have provided the name 
-     of the token as access_token so we will use access_token as the token name. 
-  */
   const token = req.cookies.access_token;
 
-  /* After we get the token we will verify it. */
-
-  /* If we don't get any token ie. if there is no token then we will just return an error by passing the 
-     middleware function errorHandler() that we created in errorHandler.js with a statusCode of 401 and 
-     message as "Unauthorised User" inside the next() function. 
-  */
   if (!token) {
-    return next(errorHandler(401, "Unauthorised User"));
+    /* */
+
+    return next(
+      errorHandler(
+        401,
+        "Your session is expired. Please logout from your account and login again."
+      )
+    );
+
+    /* */
   }
 
   /* If there is a token we will check(verify) the token is correct or not using json-web-token. */
@@ -46,5 +49,9 @@ export const verifyToken = (req, res, next) => {
        ie.. we are sending this user to the updateProfileController to update the user. 
     */
     next();
+
+    /* */
   });
+
+  /* */
 };

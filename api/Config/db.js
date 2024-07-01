@@ -20,13 +20,15 @@ const connectionUrl = async (req, res) => {
 
     /* Catching the error and displaying it. */
   } catch (error) {
+    /* */
+
     /* when not connected to the server. */
     console.log("Server is not connected ...");
+
+    /* */
   }
+
+  /* */
 };
 
 export default connectionUrl;
-
-/* For type="commonjs" we have to export like this.
-     module.exports = connectionUrl;
-*/

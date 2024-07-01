@@ -18,6 +18,7 @@ dotenv.config();
 import authRoute from "./Routes/authRoute.js";
 import userRoute from "./Routes/userRoute.js";
 import listingRoute from "./Routes/listingRoute.js";
+import addressRoute from "./Routes/addressRoute.js";
 
 import cookieParser from "cookie-parser";
 
@@ -35,18 +36,31 @@ const app = express();
 */
 
 const corsOptions = {
-  origin: (origin, callback) => {
-    // check if the origin is allowed
+  /* */
 
-    const allowedOrigins = ["http://localhost:5173", "http://localhost:4173", "https://hompoti-client.vercel.app"];
+  origin: (origin, callback) => {
+    /* */
+
+    const allowedOrigins = [
+      "http://localhost:5173",
+      "https://hompoti-client.vercel.app",
+    ];
 
     const isAllowed = allowedOrigins.includes(origin);
+
     callback(null, isAllowed ? origin : false);
+
+    /* */
   },
 
-  method: "GET, POST, PUT, DELETE, PATCH, HEAD",
+  methods: ["GET, POST, PUT, DELETE, PATCH, HEAD"],
+
   credentials: true,
+
+  /* */
 };
+
+app.use(cors(corsOptions));
 
 // app.use(
 //   cors({
@@ -54,8 +68,6 @@ const corsOptions = {
 //     credentials: true,
 //   })
 // );
-
-app.use(cors(corsOptions));
 
 /* Using express() to initialize the json() function in-order to convert codes to json format. */
 app.use(express.json());
@@ -73,6 +85,7 @@ app.use(cookieParser());
 app.use("/api/auth", authRoute);
 app.use("/api/user", userRoute);
 app.use("/api/listing", listingRoute);
+app.use("/api/address", addressRoute);
 
 /* Sending a response message to the home route. */
 app.get("/", (req, res) => {
@@ -82,10 +95,10 @@ app.get("/", (req, res) => {
 });
 
 /* Connnecting port dynamically at 8080. */
-const PORT = process.env.PORT || 9000;
+const PORT = process.env.PORT || 8000;
 
 app.listen(PORT, function () {
-  console.log(`Server is running in ${process.env.DEV_MODE} at port ${PORT}`);
+  console.log(`Server is running in ${process.env.MODE} at port ${PORT}`);
 });
 
 /* Handling the error. */

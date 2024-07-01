@@ -7,6 +7,7 @@ import { persistReducer, persistStore } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 
 import { authReducer } from "./Reducers/authReducer";
+import { othersReducer } from "./Reducers/othersReducer";
 
 /* Using persistReducer of redux-persist to stored the user data in the local-storage so that 
    when user refresh the web-page its data is not lost.
@@ -20,6 +21,7 @@ const persistConfig = {
 
 const reducers = combineReducers({
   user: authReducer,
+  others: othersReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, reducers);

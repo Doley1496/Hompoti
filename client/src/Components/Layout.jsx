@@ -1,8 +1,6 @@
 /* */
 
 import React from "react";
-import Header from "../Components/Header.jsx";
-import Footer from "../Components/Footer.jsx";
 
 import { Helmet } from "react-helmet";
 import { Toaster } from "react-hot-toast";
@@ -10,12 +8,14 @@ import { Toaster } from "react-hot-toast";
 /* Creating a layout which will contain the same functionality for all the web pages. */
 const Layout = ({ children, title, description, keywords, author }) => {
   /*  */
-  return (
-    <div>
-      {/* Using react helmet for doing SEO in react js */}
-      <Helmet>
-        {/* HTML Meta tags helps us to do SEO */}
 
+  return (
+    /* */
+
+    <div>
+      {/* Using react helmet for doing SEO in react js. HTML Meta tags helps us to do SEO */}
+
+      <Helmet>
         <meta charSet="utf-8" />
 
         <meta name="description" content={description} />
@@ -25,10 +25,9 @@ const Layout = ({ children, title, description, keywords, author }) => {
         <title>{title}</title>
       </Helmet>
 
-      {/* Displaying the Header component */}
-      {/* <Header /> */}
-
       <main style={{ minHeight: "70vh" }}>
+        {/* */}
+
         {/* Using the Toaster component for notifications */}
         <Toaster />
 
@@ -38,20 +37,25 @@ const Layout = ({ children, title, description, keywords, author }) => {
             children props.
          */}
         {children}
+
+        {/* */}
       </main>
 
-      {/* Displaying the Footer component */}
-      {/* <Footer /> */}
+      {/* */}
     </div>
+
+    /* */
   );
+
+  /* */
 };
 
 /* Creating a layout for doing SEO */
 Layout.defaultProps = {
-  title: "Ecommerce - App Shop Now",
+  title: "Property-Dealing - App Buy Now",
   description: "Mern - Stack Project",
   keywords:
-    "mern,react,mongodb,express,nodejs,web development,website ,website designing",
+    "property,real-estate,housing,rent-property,sell-property,buy-property",
   author: "Doley",
 };
 

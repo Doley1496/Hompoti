@@ -6,19 +6,23 @@ import { styled } from "styled-components";
 
 import { useNavigate } from "react-router-dom";
 
-import ListingItems from "../Components/ListingItems.jsx";
+import ListingItems from "../../Components/ListingItems.jsx";
 
 let SERVER_URL = import.meta.env.VITE_SERVER_URL;
 
 export default function Search() {
   /* */
 
-  /* Creating a variable to initialize useNavigate() in-build hook of react router dom. */
   const navigate = useNavigate();
 
-  /* Creating a useState() hook to hold the value of the inputs fields ie. search-form 
-     such as the searchTerm, type, parking etc and passing all its initial value.
-  */
+  const [listingResults, setListingResults] = useState([]);
+
+  const [error, setError] = useState(false);
+
+  const [loading, setLoading] = useState(false);
+
+  const [showMore, setShowMore] = useState(false);
+
   const [sideBarData, setSideBarData] = useState({
     searchTerm: " ",
     type: "all",
@@ -29,39 +33,9 @@ export default function Search() {
     order: "desc",
   });
 
-  /* Creating a useState() hook to store the listings that the user will get after searching 
-     in the listingResults array and passing its initial value an array (empty-array) because
-     it can contain many listing results. 
-  */
-  const [listingResults, setListingResults] = useState([]);
-
-  /* Creating a useState() hook to store the boolean value in the Error array ie. The error 
-     that can occur during any operations and passing its initial value as false because 
-     initially there will be no errors.
-  */
-  const [error, setError] = useState(false);
-
-  /* Creating a useState() hook to store the boolean value of the loading-effects in the loading 
-     array and passing its initial value as false as initially we will not load anything.
-  */
-  const [loading, setLoading] = useState(false);
-
-  /* Creating a useState() hook to store the boolean value for the showMore button ie.. when it 
-     will be true we will show the Show More button otherwise we will hide it and passing its 
-     initial value as false because initially we will show the Show More button when number of 
-     listings is more then 9.
-  */
-  const [showMore, setShowMore] = useState(false);
-
   /* ***************************************************************************************** */
   /* ***************************          FUNCTIONS              ***************************** */
   /* ***************************************************************************************** */
-
-  /* Creating a function with name change() and passing it in the onChange event of the 
-     searchTerm, type, offer, parking etc of the SearchPage.
-     onChange() event will temporarily save the data of the input fields.
-     ie.. The onChange() event attribute fires the event when the element loses focus.
-  */
 
   const change = (event) => {
     /* */
@@ -148,55 +122,15 @@ export default function Search() {
     /* */
   };
 
-  /* Creating a function name SetSearchListings() and passing(calling) it in the onSubmit 
-     event of the Search-form ie... when we will click(submit) the Search button then this 
-     function will get execute and inside this function we have written the logic to search 
-     all the listings that matches with the filter applied by the user from our database and 
-     display in the web-page. 
-  */
-
   const SetSearchListings = (event) => {
     /* */
 
     try {
       /* */
 
-      /* Preventing the default refresh of the web page. */
       event.preventDefault();
 
-      /* Getting the information of all the queries provided(available) in the url.
-         We will get the information of the queries but we will not search those queries location.
-      
-         In order to get the information of queries (the searched information) we can use a method of 
-         react call URLSearchParams() and inside this we will not pass window.location.search because now 
-         we don't need to get the location of the queries ie. we will not search in what location all the 
-         queries of the url is present. But later using useEffect() we will get the sideBar data 
-         anytime the url changes. 
-
-             ie......
-
-        * When the user selects queries and search in the sideBar search-form then we will also add all
-          the other remaining unselected queries as false with the selected queries.
-
-        * When the user will search a particular keyword in the header search-form then we will add all 
-          the previous queries along with that searched keyword if available in the url. 
-
-         ie.. we will search the keyword along with those queries provided by the user. 
-
-      */
-
       const urlParams = new URLSearchParams();
-
-      /* After getting the information we will set(change) all the values of the input-fields 
-         of the url (ie.. urlParams where we saved all the information of the queries) 
-         with the sideBarData array
-
-         Ex. 
-             To set(change) the searchTerm of the url we can use sideBarData.searchTerm which 
-             we provided in the value of the searchTerm input-field of the sideBar search-form.
-
-         And Similarly we will set(change) the value for all the fields of the search-form.
-      */
 
       urlParams.set("searchTerm", sideBarData.searchTerm);
       urlParams.set("type", sideBarData.type);
@@ -206,84 +140,29 @@ export default function Search() {
       urlParams.set("sort", sideBarData.sort);
       urlParams.set("order", sideBarData.order);
 
-      /* Then we will convert the url ( ie. urlParams where we saved all the information 
-         of the queries) into string because some of them is number or other-things and 
-         saved it in a variable say searchQuery.
-      */
-
       const searchQuery = urlParams.toString();
 
       /* After creation of the searchQuery is done we will navigate to the following route */
       navigate(`/search?${searchQuery}`);
 
-      /* Catching the error and setting the error array of the useState() hook using the 
-         setError() function with the message that we received from the error we catched. 
-      */
+      /* Catching the error and displaying it. */
     } catch (error) {
       /* */
 
-      setError(error.message);
+      console.log(error);
+
+      toast.error("Something went wrong");
 
       /* */
     }
-  };
 
-  /* Creating a function name GetSearchListings() and passing(calling) it in the useEffect()
-     function so that in initial time we can get all the listings that matches with the 
-     filter applied by the user and display in the web-page. 
-  */
+    /* */
+  };
 
   const GetSearchListings = () => {
     /* */
 
-    /* To get all the listings according to the search-term we will:
-     
-      * 1st getting the information of all the queries.
-      * Then getting the values of all the input-fields from the url.
-      * Then if we get the searchTerm, type, parking, furnished, offer, sort, order from 
-        the url (ie.. urlParams) then we will set all the values of the input fields of 
-        sideBarData array of the useState() hook using the setSideBarData() function.
-  
-       so that in initial time we get the searchTerm(search-keyword) in both the side-bar 
-       search-box and the header search-box and passing location.search in the array as 
-       dependencies because when the location.search changes (ie.. the searching location of 
-       the keyword changes) then we will update our searchTerm with the keyword of the 
-       search-form input-field.
-
-               ie......
-
-       When anything is changes in the url then we will get that changes automatically in the 
-       sidebar search-form.
-       And when anything is changes in the sidebar search-form then we will get that changes 
-       automatically in the url.
-       ie.. We can change from the url as well as from the search-form.
-
-  */
-
-    /* Getting the information of all the queries provided(available) in the url.
-      
-         In order to get this informaion (the searched information) we can use a method 
-         of react call URLSearchParams() and inside this we will pass location.search 
-         which will search in what location all the queries of the url is present.
-    
-             ie......
-   
-        * When the user selects queries and search in the sideBar search-form then we 
-          will also add all the other remaining unselected queries as false with the 
-          selected queries.
-
-        * When the user will search a particular keyword in the header search-form then 
-          we will add all the previous queries along with that searched keyword if 
-          available in the url. 
-
-         ie.. we will search the keyword along with those queries provided by the user. 
-    */
-
     const urlParams = new URLSearchParams(location.search);
-
-    /* Then we will get all the values of the input-fields from the url ( ie.. urlParams where
-       we saved all the information of the queries) and saving it in different variables.
-    */
 
     const searchTermFromUrl = urlParams.get("searchTerm");
     const typeFromUrl = urlParams.get("type");
@@ -292,35 +171,6 @@ export default function Search() {
     const offerFromUrl = urlParams.get("offer");
     const sortFromUrl = urlParams.get("sort");
     const orderFromUrl = urlParams.get("order");
-
-    /* Then if we get the searchTerm, type, parking, furnished, offer, sort, order from the 
-       url (ie.. urlParams) then we will set all the values of the input fields of 
-       sideBarData array of the useState() hook using the setSideBarData() function.
-     
-        ie..
-     
-          * If there is a change in searchTerm(search-box) ie.. if we get the searchTerm then we 
-            will set the searchTerm with searchTermFromUrl otherwise we will set it to empty string " ".
-     
-          * If there is a change in type ie.. if we get the type then we will set the type with 
-            typeFromUrl otherwise we will set it to "all".
-     
-          * If there is a change in parking ie.. if we get the parking as true from the url then we 
-            will set the parking as true otherwise we will set the parking to false.
-     
-          * If there is a change in furnished ie.. if we get the furnished as true from the url then 
-            we will set the furnished as true otherwise we will set the furnished to false.
-             
-          * If there is a change in offer ie.. if we get the offer as true from the url then we will 
-            set the offer as true otherwise we will set the offer to false.
-            
-          * If there is a change in sort ie.. if we get the sort then we will set the sort with 
-            sortFromUrl otherwise we will set it to "created_at".
-     
-          * If there is a change in order ie.. if we get the order then we will set the order with 
-            orderFromUrl otherwise we will set it to "desc".
-           
-    */
 
     if (
       searchTermFromUrl ||
@@ -342,14 +192,10 @@ export default function Search() {
       });
     }
 
-    /* Calling the fetchAllListings() function. */
     fetchAllSearchListings();
-  };
 
-  /* Creating a function name fetchAllListings() and passing(calling) it in the useEffect() hook 
-     so that in initial time we can get all the listings created by different owners in the 
-     search-page.   
-  */
+    /* */
+  };
 
   const fetchAllSearchListings = async () => {
     /* */
@@ -357,54 +203,14 @@ export default function Search() {
     try {
       /* */
 
-      /*  Setting the loading array of the useState() hook as true using the setLoading() 
-          function because in initial time using useEffect() hook we will display loading 
-          effects ( ie.. display text as Loading... in the search-page ) 
-      */
       setLoading(true);
 
-      /* Then we will set the showMore array of the useState() hook as false using the 
-         setShowMore() function because initially we will show the Show More button only when 
-         number of listings is more then 7.
-      */
       setShowMore(false);
-
-      /* Getting the information of all the queries provided(available) in the url.
-      
-         In order to get this informaion (the searched information) we can use a method of react 
-         call URLSearchParams() and inside this we will pass location.search which will search in 
-         what location all the queries of the url is present.
-    
-             ie......
-   
-        * When the user selects queries and search in the sideBar search-form then we will also 
-          add all the other remaining unselected queries as false with the selected queries.
-
-        * When the user will search a particular keyword in the header search-form then we will 
-          add all the previous queries along with that searched keyword if available in the url. 
-
-         ie.. we will search the keyword along with those queries provided by the user. 
-      */
 
       const urlParams = new URLSearchParams(location.search);
 
-      /* Then we will convert the url ( ie. urlParams where we saved all the information of the
-         queries) into string because some of them is number or other-type and then we will saved
-         it in a variable say searchQuery.
-      */
       const searchQuery = urlParams.toString();
 
-      /* Sending a GET fetch request to the following route to get the listings of the user.
-             
-          The browsers will only expose(show) the response to the frontend JavaScript code if 
-          the Access-Control-Allow-Credentials value is true.
-          Therefore to set Access-Control-Allow-Credentials value as true 1st we will have to 
-          pass the credentials as "include" and when we will pass its value as true inside the 
-          cors() function then it will expose the response to the frontend.
-          After adding this only we will get the cookies,updated values etc.
-             
-          Credentials are cookies, authorization headers, or TLS client certificates.
-      */
       const res = await fetch(
         `${SERVER_URL}/api/listing/getAllSearchListings?${searchQuery}`,
         {
@@ -413,19 +219,7 @@ export default function Search() {
         }
       );
 
-      /* After getting the response we will convert the response that we got into the json 
-         format and save it in a variable say data.
-      */
       const data = await res.json();
-
-      /* Ater fetching the listings if we get the total number of listings more then 3 
-         (ie.. when length of the data is more then 3) then we will set the showMore array 
-         of the useState() hook as true using the setShowMore() function because when the number
-         of listings is more then 4 then we will show the Show More button. Else we will set it 
-         to false (ie.. not show the Show More button).
-         The length of the total number of listings cannot be greater then the limit.
-         Ex: if limit = 8 then length should be less then the limit ie..  -> data.length > 7
-      */
 
       if (data.length > 8) {
         setShowMore(true);
@@ -433,42 +227,25 @@ export default function Search() {
         setShowMore(false);
       }
 
-      /* After getting and converting the response into json format.
-                   
-          * We will set the listingResults array of the useState() hook using the setListingResults() 
-            function with the data's of the data variable where we saved the response by converting 
-            it into the json format.
-             
-          * When we get the data we need to set the loading to false because after getting the data
-            we will not show Loading... in the listing page.
-      */
-
       setListingResults(data);
 
       setLoading(false);
 
-      /* Catching the error and setting the error array of the useState() hook using the setError() 
-         function with the message that we received from the error we catched and also we will set 
-         the loading array of the useState() hook as false using the setLoading() function because 
-         if we catch any error then will not show Loading... in the listing page.
-      */
+      /* Catching the error and displaying it. */
     } catch (error) {
       /* */
 
-      setError(error.message);
+      toast.error("Something went wrong");
+
+      console.log(error);
 
       setLoading(false);
 
       /* */
     }
-  };
 
-  /* Creating a function name ShowMoreListings() and passing(calling) it in the onClick() event 
-     of the Show More button and when that button will be click then this function will get execute 
-     and inside this function we have written the logic to get the next 4 listings created by 
-     different owners in the search-page because at starting we have set to view 4 listings on 
-     the search-page. 
-  */
+    /* */
+  };
 
   const ShowMoreListings = async () => {
     /* */
@@ -479,52 +256,16 @@ export default function Search() {
     /* Then we will find the starting-index ie. from where we will start showing the listings. */
     const startIndex = numberOfListings;
 
-    /* Then we will get params because based on the previous params we want to fetch the data. */
-
-    /* Getting the information of all the queries provided(available) in the url.
-      
-         In order to get this informaion (the searched information) we can use a method of react call 
-         URLSearchParams() and inside this we will pass location.search which will search in what 
-         location all the queries of the url is present.
-    
-             ie......
-   
-        * When the user selects queries and search in the sideBar search-form then we will also add all
-          the other remaining unselected queries as false with the selected queries.
-
-        * When the user will search a particular keyword in the header search-form then we will add all 
-          the previous queries along with that searched keyword if available in the url. 
-
-         ie.. we will search the keyword along with those queries provided by the user. 
-    */
-
     const urlParams = new URLSearchParams(location.search);
 
     /* After getting the information we will set(change) the value of the startIndex of the url 
-       (ie.. urlParams where we saved all the information of the queries) with the startIndex variable
-       where we saved the total number of listings.
+       (ie.. urlParams where we saved all the information of the queries) with the startIndex 
+       variable where we saved the total number of listings.
     */
 
     urlParams.set("startIndex", startIndex);
 
-    /* Then we will convert the url ( ie. urlParams where we saved all the information of the queries) 
-       into string because some of them is number or other-type and then we will saved it in a variable 
-       say searchQuery.
-    */
-
     const searchQuery = urlParams.toString();
-
-    /* Sending a GET fetch request to the following route to get the listings of the user.
-             
-        The browsers will only expose(show) the response to the frontend JavaScript code if the
-        Access-Control-Allow-Credentials value is true.
-        Therefore to set Access-Control-Allow-Credentials value as true 1st we will have to pass the
-        credentials as "include" and when we will pass its value as true inside the cors() function then
-        it will expose the response to the frontend.
-        After adding this only we will get the cookies,updated values etc.
-             
-        Credentials are cookies, authorization headers, or TLS client certificates.
-    */
 
     const res = await fetch(
       `${SERVER_URL}/api/listing/getAllSearchListings?${searchQuery}`,
@@ -534,45 +275,20 @@ export default function Search() {
       }
     );
 
-    /* After getting the response we will convert the response that we got into the json format
-       and save it in a variable say data.
-    */
     const data = await res.json();
-
-    /* When we get the total number of listings less then 4 (ie.. when length of the data is less then 4)
-       then we will set the showMore array of the useState() hook as false using the setShowMore() function
-       because when the number of listings is less then 4 then we will not show the Show More button. 
-
-       If we make it true then Show More button will be displayed, but when there is no listings available
-       in our database we will not show the Show More button.  
-    */
 
     if (data.length < 9) {
       setShowMore(false);
     }
-
-    /* After getting and converting the response into json format.
-                   
-       * We will set the listingResults array of the useState() hook using the setListingResults() function 
-         with the previous data of the listingResults array and the previous data's of the data variable where
-         we saved the response by converting it into the json format.
-    */
 
     setListingResults([...listingResults, ...data]);
 
     /* */
   };
 
-  /* *************************************************************************************** */
-  /* ********************************** useEffect() hooks ********************************** */
-  /* *************************************************************************************** */
-
-  /* Creating an useEffect() hook and calling the GetSearchListings() function so that in 
-     initial time we can get all the listings that matches with the search-term in this 
-     particular page and passing location.search as dependencies because when the 
-     location.search changes (ie.. the searching location of the keyword changes) then we 
-     will update our searchTerm with the keyword of the search-form input-field.
-  */
+  /* ************************************************************************************* */
+  /* ********************************** useEffect() hooks ******************************** */
+  /* ************************************************************************************* */
 
   useEffect(() => {
     /* */
@@ -582,14 +298,9 @@ export default function Search() {
     /* */
   }, [location.search]);
 
-  /* ***************************************************************************** */
-  /* *************************          return      ****************************** */
-  /* ***************************************************************************** */
-
-  /* Returning the content that we will display in the "/search" route.
-     because for this route we have provide component {<SearchPage />}
-     ie.   <Route path="/search" element={<SearchPage />} />
-  */
+  /* ************************************************************************************* */
+  /* **********************************    return    ************************************* */
+  /* ************************************************************************************* */
 
   return (
     /* */
@@ -897,12 +608,14 @@ export default function Search() {
 
     /* */
   );
+
+  /* */
 }
 
 /* **************************************************************************************** */
-/* Using styled of styled-components we are styling the images ie.. the images to be display
-   vertically and the seleced(click) image that is to be display horizontally and storing in 
-   a variable Wrapper. This Wrapper will be use to wrap the whole elements we want to return.
+/* Using media-queries of styled of styled-components we are providing responsiveness for 
+   mobile size and storing in a variable Wrapper. This Wrapper will be use to wrap the whole 
+   elements we want to return.
 */
 /* **************************************************************************************** */
 

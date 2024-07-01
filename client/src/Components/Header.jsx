@@ -16,44 +16,24 @@ import { useSelector } from "react-redux";
 
 import Dropdown from "./Dropdown.jsx";
 
-function Header() {
+export default function Header() {
   /* */
 
   const handleClick = () => {
     setClick(!click);
   };
 
-  /* Creating a variable to initialize useNavigate(). */
   const navigate = useNavigate();
-
-  /* Using useSelector() hook we are destructing (importing) currentUser from the initial-state
-     (ie. currentUser) of the userSlice variable aimport function from './../Pages/All/ServicePage';
-     and storing it in a variable. 
-  */
 
   const { currentUser } = useSelector((state) => state.user);
 
-  /* Creating an useState() hook to store the value(keyword) provided in the search field in the 
-     searchTerm array and passing its initial value as empty string because initially there will be no 
-     search keyword in the search field.
-  */
-
   const [searchTerm, setSearchTerm] = useState("");
 
-  /* Creating a useState() hook to store the boolean value in the Error array ie. The error that 
-     can occur during any operations and passing its initial value as false because initially there 
-     will be no errors.
-  */
-
-  const [Error, setError] = useState(false);
-
-  /* Creating a useState() hook to store the boolean value in the openProfile array 
-     ie. When the user will click on the link we will set this false value to true which will display 
-     the dropdown menu and passing its initial value as false because initially nobody will 
-     click on the link.
-  */
+  const [error, setError] = useState(false);
 
   const [openProfile, setOpenProfile] = useState(false);
+
+  const [click, setClick] = useState(false);
 
   /* Creating a logic to hide the dropdown menu when the user click on any part of the page. */
   const menuRef = useRef();
@@ -78,8 +58,6 @@ function Header() {
 
     /* */
   });
-
-  const [click, setClick] = useState(false);
 
   const content = (
     /* */
@@ -183,121 +161,43 @@ function Header() {
     /* */
   );
 
-  /* Creating a function name SetSearchListings() and passing(calling) it in the onSubmit 
-     event of the Search-form ie... when we will click(submit) the Search button then this 
-     function will get execute and inside this function we have written the logic to search 
-     all the listings that matches with the filter applied by the user from our database and 
-     display in the web-page. 
-  */
-
   const SetSearchListings = async (event) => {
     /* */
 
     try {
       /* */
 
-      /* Preventing the default refresh of the web page. */
       event.preventDefault();
-
-      /* Getting the information of all the queries provided(available) in the url.
-        
-         In order to get this informaion (the searched information) we can use a method of 
-         react call URLSearchParams() and inside this we will pass window.location.search which 
-         will search in what location all the queries of the url is present.
-      
-               ie......
-     
-          * When the user selects queries and search in the sideBar search-form then we will 
-            also add all the other remaining unselected queries as false with the selected queries.
-  
-          * When the user will search a particular keyword in the header search-form then we will 
-            add all the previous queries along with that searched keyword if available in the url. 
-  
-           ie.. we will search the keyword along with those queries provided by the user. 
-      */
 
       const urlParams = new URLSearchParams(window.location.search);
 
-      /* After getting the information we will set(change) the searchTerm of the url ( ie. urlParams 
-         where we saved all the information of the queries) with the searchTerm which we provided in 
-         the value of the input field of the search-form of the header section.  
-      */
-
       urlParams.set("searchTerm", searchTerm);
-
-      /* Then we will convert the url ( ie. urlParams where we saved all the information of the queries) 
-         into string because some of them is number or other-things and saved it in a variable say
-         searchQuery.
-      */
 
       const searchQuery = urlParams.toString();
 
       /* After everything is done we will navigate to the following route.  */
       navigate(`/search?${searchQuery}`);
 
-      /* Catching the error and setting the error array of the useState() hook using the setError() 
-         function with the message that we received from the error we catched. 
-      */
+      /* Catching the error and dsplaying in the console. */
     } catch (error) {
       /* */
 
       setError(error.message);
 
+      console.log(error);
+
       /* */
     }
-  };
 
-  /* Creating a function name GetSearchListings() and passing(calling) it in the useEffect()
-     function so that in initial time we can get all the listings that matches with the 
-     filter applied by the user and display in the web-page. 
-  */
+    /* */
+  };
 
   const GetSearchListings = () => {
     /* */
 
-    /* To get listings according to the match search-term we will:
-  
-       
-        * 1st getting the information of all the queries.
-        * Then getting the searchTerm from the url.
-        * Then if we get the searchTerm from the url we will set the searchTerm array.
-    
-         so that in initial time we get the searchTerm(search-keyword) in the header 
-         search-box and passing location.search in the array as dependencies because when 
-         the location.search changes (ie.. the searching location of the keyword changes)
-         then we will update our searchTerm with the keyword of the search-form input field.
-    */
-
-    /* 1. Getting the information of all the queries provided in the url.
-        
-       In order to get this informaion (the searched information) we can use a method of react
-       call URLSearchParams() and inside this we will pass location.search which will search 
-       in what location all the queries of the url is present.
-      
-            ie......
-  
-        * When the user selects queries and search then we will also add all the other remaining 
-          unselected queries as false with the selected queries.
-  
-        * When the user will search a particular keyword in the search field then we will also 
-          add all the previous queries along with that searched keyword if available in the url. 
-  
-          ie.. we will search the keyword along with those queries provided by the user. 
-    */
-
     const urlParams = new URLSearchParams(location.search);
 
-    /* 2. Then we will get the searchTerm from the url ( ie.. urlParams where we saved all the 
-          information of the queries) and saving it in a variable say searchTermFromUrl.
-    */
-
     const searchTermFromUrl = urlParams.get("searchTerm");
-
-    /* 3. If there is a change in searchTerm(search-box) ie.. if we get the searchTerm from the url 
-          (ie.. urlParams) then we will set the searchTerm array of the useState() hook using the 
-          setSearchTerm() function with the searchTermFromUrl varibale where we saved the searchTerm
-          of the url.
-    */
 
     if (searchTermFromUrl) {
       setSearchTerm(searchTermFromUrl);
@@ -306,9 +206,9 @@ function Header() {
     /* */
   };
 
-  /* *************************************************************************************** */
-  /* ********************************** useEffect() hooks ********************************** */
-  /* *************************************************************************************** */
+  /* ************************************************************************************ */
+  /* ********************************** useEffect() hooks ******************************* */
+  /* ************************************************************************************ */
 
   /* Creating an useEffect() hook and calling the GetSearchListings() function so that in 
      initial time we can get all the listings that matches with the search-term in this 
@@ -324,6 +224,10 @@ function Header() {
 
     /* */
   }, [location.search]);
+
+  /* ************************************************************************************ */
+  /* ************************************************************************************ */
+  /* ************************************************************************************ */
 
   return (
     /* */
@@ -479,12 +383,14 @@ function Header() {
 
     /* */
   );
+
+  /* */
 }
 
 /* **************************************************************************************** */
-/* Using styled of styled-components we are styling the images ie.. the images to be display
-   vertically and the seleced(click) image that is to be display horizontally and storing 
-   in a variable Wrapper. This Wrapper will be use to wrap the whole elements we want to return.
+/* Using media-queries of styled of styled-components we are providing responsiveness for 
+   mobile size and storing in a variable Wrapper. This Wrapper will be use to wrap the whole 
+   elements we want to return.
 */
 /* **************************************************************************************** */
 
@@ -525,5 +431,3 @@ const Wrapper = styled.section`
 
   /* */
 `;
-
-export default Header;
