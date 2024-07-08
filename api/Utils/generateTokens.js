@@ -19,6 +19,7 @@ export const generateTokens = async (res, user) => {
     res.cookie("accessToken", accessToken, {
       expires: new Date(Date.now() + 86400 * 1000), // 1 Day
       httpOnly: true, // accessible only by the web server
+      secure: true, // for https
       sameSite: "lax", // cross-site cookie
       path: "/",
     });
