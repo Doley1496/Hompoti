@@ -10,14 +10,20 @@ import { Link, useNavigate } from "react-router-dom";
 
 import AddressCard from "./AddressCard.jsx";
 
+import { useDispatch } from "react-redux";
+
+import { toast } from "react-toastify";
+
+import { signOutUserSuccess } from "../../Redux/Actions/authActions.jsx";
+
 let VITE_SERVER_URL = import.meta.env.VITE_SERVER_URL;
 
 let userId = localStorage.getItem("id");
 
-import { toast } from "react-toastify";
-
 export default function PropertyBillingForm() {
   /* */
+
+  const dispatch = useDispatch();
 
   const navigate = useNavigate();
 
@@ -73,6 +79,8 @@ export default function PropertyBillingForm() {
       } else {
         /* */
 
+        setLoading(true);
+
         const res = await fetch(
           `${VITE_SERVER_URL}/api/address/create-billingAddress`,
           {
@@ -91,14 +99,40 @@ export default function PropertyBillingForm() {
         if (data.success === false) {
           /* */
 
-          toast.error(data.message);
+          if (data.statusCode === 401) {
+            /* */
 
-          setLoading(false);
+            setLoading(false);
 
-          return;
+            dispatch(signOutUserSuccess());
+
+            localStorage.clear();
+
+            alert(
+              "Your cookie is mismatched. You are signing out of our account!"
+            );
+
+            toast.success("Successfully Logged Out");
+
+            return;
+
+            /* */
+          } else {
+            /* */
+
+            toast.error(data.message);
+
+            setLoading(false);
+
+            return;
+
+            /* */
+          }
 
           /* */
         }
+
+        setLoading(false);
 
         navigate("/propertySummaryPage/?step=3");
 
@@ -113,7 +147,9 @@ export default function PropertyBillingForm() {
 
       console.log(error);
 
-      toast.error("Something went wrong");
+      setLoading(false);
+
+      toast.error("Something went wrong. Please try again later!");
 
       /* */
     }
@@ -145,11 +181,35 @@ export default function PropertyBillingForm() {
         if (data.success === false) {
           /* */
 
-          toast.error(data.message);
+          if (data.statusCode === 401) {
+            /* */
 
-          setLoading(false);
+            setLoading(false);
 
-          return;
+            dispatch(signOutUserSuccess());
+
+            localStorage.clear();
+
+            alert(
+              "Your cookie is mismatched. You are signing out of our account!"
+            );
+
+            toast.success("Successfully Logged Out");
+
+            return;
+
+            /* */
+          } else {
+            /* */
+
+            toast.error(data.message);
+
+            setLoading(false);
+
+            return;
+
+            /* */
+          }
 
           /* */
         }
@@ -165,7 +225,7 @@ export default function PropertyBillingForm() {
     } catch (error) {
       /* */
 
-      toast.error("Something went wrong.");
+      toast.error("Something went wrong. Please try again later!");
 
       setLoading(false);
 

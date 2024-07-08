@@ -16,6 +16,7 @@ import {
   signInStart,
   signInSuccess,
   signInFailure,
+  setAccessToken,
 } from "./../Redux/Actions/authActions.jsx";
 
 import { toast } from "react-toastify";
@@ -77,9 +78,11 @@ export default function OAuth() {
         /* */
       }
 
-      window.localStorage.setItem("id", data._id);
+      window.localStorage.setItem("id", data.user._id);
 
-      dispatch(signInSuccess(data));
+      dispatch(signInSuccess(data.user));
+
+      dispatch(setAccessToken(data.token));
 
       navigate("/");
 
@@ -99,12 +102,9 @@ export default function OAuth() {
     /* */
   };
 
-  /* **************************************************************************************** */
-  /* **************************************************************************************** */
-  /* **************************************************************************************** */
-  /* **************************************************************************************** */
-
-  /* Returning the content that we will display when this component will be call. */
+  /* ******************************************************************* */
+  /* ************************    return     **************************** */
+  /* ******************************************************************* */
 
   return (
     /* */

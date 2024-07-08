@@ -53,8 +53,79 @@ import VerificationPrivateRoute from "./Components/VerificationPrivateRoute.jsx"
 import VerificationPage from "./Pages/User/VerificationPage.jsx";
 import MainVerificationPage from "./Pages/User/MainVerificationPage.jsx";
 
+/* ************************************************************************* */
+
+import { useEffect } from "react";
+
+import { useSelector, useDispatch } from "react-redux";
+
+import { toast } from "react-toastify";
+
+import { jwtDecode } from "jwt-decode";
+
+import {
+  signOutUserSuccess,
+  deleteAccessToken,
+} from "./Redux/Actions/authActions.jsx";
+
 export default function App() {
   /* */
+
+  const dispatch = useDispatch();
+
+  const { token } = useSelector((state) => state.user);
+
+  const handleAutoLogOut = async () => {
+    /* */
+
+    try {
+      /* */
+
+      dispatch(signOutUserSuccess());
+
+      dispatch(deleteAccessToken());
+
+      localStorage.clear();
+
+      alert("Your session is expired. Please login again!");
+
+      toast.success("Successfully Logged Out");
+
+      /* Catching the error and dispatching it to the frontend. */
+    } catch (error) {
+      /* */
+
+      console.log(error);
+
+      /* */
+    }
+
+    /* */
+  };
+
+  /* ****************************************************************************************** */
+  /* ********************************** useEffect() hooks ************************************* */
+  /* ****************************************************************************************** */
+
+  useEffect(() => {
+    /* */
+
+    if (token) {
+      const { exp } = jwtDecode(token);
+
+      const checkTokenValidity = () => {
+        if (exp < Date.now() / 1000) {
+          handleAutoLogOut();
+        }
+      };
+
+      const interval = setInterval(checkTokenValidity, 3600000);
+
+      return () => clearInterval(interval);
+    }
+
+    /* */
+  }, [token]);
 
   const theme = {
     /* */

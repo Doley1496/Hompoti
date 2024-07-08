@@ -100,7 +100,7 @@ export default function Header() {
                 ref={menuRef}
               >
                 <img
-                  src={currentUser.avatar}
+                  src={currentUser ? currentUser.avatar : ""}
                   alt="profile"
                   className="rounded-full h-[50px] w-[50px] object-cover ml-5 responsive-dropdown"
                   ref={imgRef}
@@ -206,9 +206,9 @@ export default function Header() {
     /* */
   };
 
-  /* ************************************************************************************ */
-  /* ********************************** useEffect() hooks ******************************* */
-  /* ************************************************************************************ */
+  /* ******************************************************************* */
+  /* *******************  useEffect() hooks  *************************** */
+  /* ******************************************************************* */
 
   /* Creating an useEffect() hook and calling the GetSearchListings() function so that in 
      initial time we can get all the listings that matches with the search-term in this 
@@ -225,9 +225,9 @@ export default function Header() {
     /* */
   }, [location.search]);
 
-  /* ************************************************************************************ */
-  /* ************************************************************************************ */
-  /* ************************************************************************************ */
+  /* ******************************************************************* */
+  /* ************************    return     **************************** */
+  /* ******************************************************************* */
 
   return (
     /* */
@@ -331,7 +331,7 @@ export default function Header() {
                     ref={menuRef}
                   >
                     <img
-                      src={currentUser.avatar}
+                      src={currentUser ? currentUser.avatar : ""}
                       alt="profile"
                       className="rounded-full h-[50px] w-[50px] object-cover ml-9 mr-[-20px] mt-[-10px]"
                       ref={imgRef}

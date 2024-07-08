@@ -6,16 +6,14 @@ import styled from "styled-components";
 
 import Layout from "../../Components/Layout.jsx";
 
-import { Link } from "react-router-dom";
-
 import ListingItems from "../../Components/ListingItems.jsx";
-
-let SERVER_URL = import.meta.env.VITE_SERVER_URL;
 
 import Slider from "react-slick";
 
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+
+import { Link } from "react-router-dom";
 
 /* ****************************************************** */
 /* Function for next-arrow ie. to move to the next image. */
@@ -78,6 +76,8 @@ function PrevArrow(props) {
 
   /* */
 }
+
+let SERVER_URL = import.meta.env.VITE_SERVER_URL;
 
 export default function HomePage() {
   /* */

@@ -15,7 +15,10 @@ import {
   ResetPasswordController,
   SendVerificationEmailController,
   VerifyEmailController,
+  RefreshTokenController,
 } from "../Controllers/authController.js";
+
+import { verifyJwtToken } from "../Middlewares/verifyUser.js";
 
 router.get("/test", testController);
 
@@ -26,6 +29,8 @@ router.post("/signIn", SignInController);
 router.post("/google", GoogleOauthController);
 
 router.get("/signOut", SignOutController);
+
+router.get("/refreshToken", RefreshTokenController, verifyJwtToken);
 
 router.post("/contact", ComplainMessageController);
 

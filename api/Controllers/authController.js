@@ -6,8 +6,6 @@ import contactModel from "../Models/contactModel.js";
 
 import bcryptjs from "bcryptjs";
 
-import { errorHandler } from "../Middlewares/errorHandler.js";
-
 import JWT from "jsonwebtoken";
 
 import crypto from "crypto";
@@ -15,6 +13,10 @@ import crypto from "crypto";
 import { SendResetPasswordEmail } from "./emailController.js";
 
 import { SendVerifyEmail } from "./emailController.js";
+
+import { errorHandler } from "../Middlewares/errorHandler.js";
+
+import { generateTokens } from "../Utils/generateTokens.js";
 
 /********************************************************************************************** */
 /*******************************   1 : Testing Controller   *********************************** */
@@ -36,6 +38,8 @@ export const SignUpController = async (req, res, next) => {
   try {
     /* */
 
+    const { email } = req.body;
+
     const validEmail = await userModel.findOne({
       email: req.body.email,
     });
@@ -56,19 +60,46 @@ export const SignUpController = async (req, res, next) => {
       /* */
     }
 
-    /* Before creating the user we will hashed the password of the user using hashSync method of bcryptjs. */
-    const hashedPassword = await bcryptjs.hashSync(req.body.password, 10);
+    if (validEmail) {
+      /* */
 
-    /* Then we will create the new-user and save it. */
+      const hashedPassword = await bcryptjs.hashSync(req.body.password, 10);
 
-    const newUser = await new userModel({
-      ...req.body,
-      password: hashedPassword,
-    }).save();
+      const updatedUserInfo = await userModel.findOneAndUpdate(
+        /* */
 
-    const { password: pass, ...remainingUserDetails } = newUser._doc;
+        { email },
 
-    res.status(200).json(remainingUserDetails);
+        { ...req.body, password: hashedPassword },
+
+        { new: true }
+
+        /* */
+      );
+
+      const { password: pass, ...remainingUserDetails } = updatedUserInfo._doc;
+
+      res.status(200).json(remainingUserDetails);
+
+      /* */
+    } else {
+      /* */
+
+      /* Before creating the user we will hashed the password of the user using hashSync method of bcryptjs. */
+      const hashedPassword = await bcryptjs.hashSync(req.body.password, 10);
+
+      /* Then we will create the new-user and save it. */
+      const newUser = await new userModel({
+        ...req.body,
+        password: hashedPassword,
+      }).save();
+
+      const { password: pass, ...remainingUserDetails } = newUser._doc;
+
+      res.status(200).json(remainingUserDetails);
+
+      /* */
+    }
 
     /* Catching the error and passing it to the next() function which is a middleware to handle the error. */
   } catch (error) {
@@ -92,7 +123,6 @@ export const SignInController = async (req, res, next) => {
   try {
     /* */
 
-    /* Destructuring email and password from req.body. */
     const { email, password } = req.body;
 
     const validUser = await userModel.findOne({ email });
@@ -143,21 +173,9 @@ export const SignInController = async (req, res, next) => {
       /* */
     }
 
-    const token = JWT.sign({ id: validUser._id }, process.env.JWT_SECRET, {
-      expiresIn: "1d",
-    });
+    await generateTokens(res, validUser);
 
-    const { password: pass, ...remainingUserDetails } = validUser._doc;
-
-    res
-      .cookie("access_token", token, {
-        httpOnly: true,
-        expire: 2160000 + Date.now(),
-      })
-      .status(200)
-      .json(remainingUserDetails);
-
-    /* Catching the error and passing it to the next() function which is a middleware to handle the error. */
+    /* Catching the error and passing to the next() function which is a middleware to handle the error. */
   } catch (error) {
     /* */
 
@@ -207,19 +225,7 @@ export const GoogleOauthController = async (req, res, next) => {
     if (existingUser) {
       /* */
 
-      const token = JWT.sign({ id: existingUser._id }, process.env.JWT_SECRET, {
-        expiresIn: "1d",
-      });
-
-      const { password: pass, ...remainingUserDetails } = existingUser._doc;
-
-      res
-        .cookie("access_token", token, {
-          httpOnly: true,
-          expire: 2160000 + Date.now(),
-        })
-        .status(200)
-        .json(remainingUserDetails);
+      await generateTokens(res, existingUser);
 
       /* */
     } else {
@@ -260,24 +266,12 @@ export const GoogleOauthController = async (req, res, next) => {
       });
       await newUser.save();
 
-      const token = JWT.sign({ id: newUser._id }, process.env.JWT_SECRET, {
-        expiresIn: "1d",
-      });
-
-      const { password: pass, ...remainingUserDetails } = newUser._doc;
-
-      res
-        .cookie("access_token", token, {
-          httpOnly: true,
-          expire: 2160000 + Date.now(),
-        })
-        .status(200)
-        .json(remainingUserDetails);
+      await generateTokens(res, newUser);
 
       /* */
     }
 
-    /* Catching the error and passing it to the next() function which is a middleware to handle the error. */
+    /* Catching the error and passing to the next() function which is a middleware to handle the error. */
   } catch (error) {
     /* */
 
@@ -299,11 +293,15 @@ export const SignOutController = async (req, res, next) => {
   try {
     /* */
 
-    res.clearCookie("access_token");
+    res.clearCookie("accessToken", {
+      httpOnly: true,
+      sameSite: "lax",
+      path: "/",
+    });
 
     res.status(200).json("User has been logged Out!");
 
-    /* Catching the error and passing it to the next() function which is a middleware to handle the error. */
+    /* Catching the error and passing to the next() function which is a middleware to handle the error. */
   } catch (error) {
     /* */
 
@@ -395,7 +393,7 @@ export const SendLinkController = async (req, res, next) => {
 
     res.status(200).json({
       status: "success",
-      message: "Password reset link has been send to the user's email.",
+      message: "Password reset link has been send to your email.",
     });
 
     /* */
@@ -473,7 +471,7 @@ export const ResetPasswordController = async (req, res, next) => {
         if (isSuccess) {
           res.status(200).json({
             status: 200,
-            message: "Password changes successfully",
+            message: "Password changed successfully",
           });
         }
 
@@ -483,7 +481,7 @@ export const ResetPasswordController = async (req, res, next) => {
 
         res.status(200).json({
           status: 200,
-          message: "Link has been expired",
+          message: "Password reset link has been expired",
         });
 
         /* */
@@ -491,9 +489,13 @@ export const ResetPasswordController = async (req, res, next) => {
 
       /* */
     } else {
+      /* */
+
       return res
         .status(400)
         .json({ message: "Password and confirm password doesn't match." });
+
+      /* */
     }
 
     /* Catching the error and passing it to the next() function which is a middleware to handle the error. */
@@ -604,7 +606,6 @@ export const VerifyEmailController = async (req, res, next) => {
         /* */
       );
 
-      /* If not successfully updated then we will return a error response message. */
       if (!updatedUserInfo) {
         res.status(400).json({
           status: "false",
@@ -612,17 +613,7 @@ export const VerifyEmailController = async (req, res, next) => {
         });
       }
 
-      const token = JWT.sign({ id: existingUser._id }, process.env.JWT_SECRET, {
-        expiresIn: "1h",
-      });
-
-      res
-        .cookie("access_token", token, {
-          httpOnly: true,
-          expire: 2160000 + Date.now(),
-        })
-        .status(200)
-        .json(updatedUserInfo);
+      await generateTokens(res, updatedUserInfo);
 
       /* */
     }
@@ -635,6 +626,69 @@ export const VerifyEmailController = async (req, res, next) => {
 
     /* */
   }
+
+  /* */
+};
+
+export const RefreshTokenController = async (req, res, next) => {
+  /* */
+
+  const cookies = req.headers.cookie;
+
+  const previousToken = cookies.split("=")[1];
+
+  if (!previousToken) {
+    return next(errorHandler(401, "Unauthorized User: Token expired"));
+  }
+
+  JWT.verify(
+    previousToken,
+    process.env.ACCESS_TOKEN_JWT_SECRET,
+    async (error, decodedData) => {
+      /* */
+
+      if (error) return next(errorHandler(403, "Authentication Failed"));
+
+      res.clearCookie("refreshToken");
+
+      req.cookies["refreshToken"] = "";
+
+      const newAccessToken = JWT.sign(
+        {
+          userId: decodedData.id,
+        },
+        process.env.ACCESS_TOKEN_JWT_SECRET,
+        { expiresIn: "4h" }
+      );
+
+      res.cookie("accessToken", newAccessToken, {
+        expires: new Date(Date.now() + 3600 * 4), // 4 hours
+        httpOnly: true, // accessible only by the web server
+        sameSite: "lax", // cross-site cookie
+        path: "/",
+
+        // secure: true // for https
+        // maxAge: 7 * 24 * 60 * 60 * 1000, // expiry time
+      });
+
+      req.user = decodedData;
+
+      next();
+
+      // const foundUser = await userModel.findOne({ _id: decodedData.id });
+
+      // if (!foundUser)
+      //   return next(errorHandler(401, "Unauthorised User. User not found"));
+
+      // const { password: pass, ...remainingUserDetails } = foundUser._doc;
+
+      // res
+      //   .status(200)
+      //   .json({ user: remainingUserDetails, token: newAccessToken });
+
+      /* */
+    }
+  );
 
   /* */
 };

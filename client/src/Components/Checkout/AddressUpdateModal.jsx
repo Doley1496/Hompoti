@@ -4,7 +4,11 @@ import React, { useState, useEffect } from "react";
 
 import styled from "styled-components";
 
+import { useDispatch } from "react-redux";
+
 import { toast } from "react-toastify";
+
+import { signOutUserSuccess } from "../../Redux/Actions/authActions.jsx";
 
 import { Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
 
@@ -21,6 +25,8 @@ export default function AddressUpdateModal({
   addressId,
 }) {
   /* */
+
+  const dispatch = useDispatch();
 
   const [loading, setLoading] = useState(false);
 
@@ -78,23 +84,51 @@ export default function AddressUpdateModal({
         if (data.success === false) {
           /* */
 
-          setError(data.message);
+          if (data.statusCode === 401) {
+            /* */
 
-          toast.error(data.message);
+            setLoading(false);
 
-          /* */
-        } else {
-          /* */
+            dispatch(signOutUserSuccess());
 
-          toast.success("Your address is updated");
+            localStorage.clear();
 
-          setInputs("");
+            alert(
+              "Your cookie is mismatched. You are signing out of our account!"
+            );
 
-          /* Reloading the web-page. */
-          window.location.reload();
+            toast.success("Successfully Logged Out");
+
+            return;
+
+            /* */
+          } else {
+            /* */
+
+            setError(data.message);
+
+            toast.error(data.message);
+
+            setLoading(false);
+
+            return;
+
+            /* */
+          }
 
           /* */
         }
+
+        setLoading(false);
+
+        toast.success("Your address is updated");
+
+        setInputs("");
+
+        /* Reloading the web-page. */
+        window.location.reload();
+
+        /* */
       } else {
         /* */
 

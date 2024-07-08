@@ -4,7 +4,7 @@ import express from "express";
 
 const router = express.Router();
 
-import { verifyToken } from "../Middlewares/verifyUser.js";
+import { verifyJwtToken } from "../Middlewares/verifyUser.js";
 
 import {
   createBillingAddressController,
@@ -13,19 +13,27 @@ import {
   deleteBillingAddressController,
 } from "../Controllers/addressController.js";
 
-router.post("/create-billingAddress", createBillingAddressController);
+router.post(
+  "/create-billingAddress",
+  verifyJwtToken,
+  createBillingAddressController
+);
 
-router.get("/get-billingAddress/:id", verifyToken, getBillingAddressController);
+router.get(
+  "/get-billingAddress/:id",
+  verifyJwtToken,
+  getBillingAddressController
+);
 
 router.put(
   "/update-billingAddress/:id",
-  verifyToken,
+  verifyJwtToken,
   updateBillingAddressController
 );
 
 router.delete(
   "/delete-billingAddress/:id",
-  verifyToken,
+  verifyJwtToken,
   deleteBillingAddressController
 );
 

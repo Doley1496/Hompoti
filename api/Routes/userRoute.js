@@ -12,13 +12,17 @@ import {
   GetSingleUserDetailsController,
 } from "../Controllers/userController.js";
 
-import { verifyToken } from "../Middlewares/verifyUser.js";
+import { verifyJwtToken } from "../Middlewares/verifyUser.js";
 
-router.post("/update-profile/:id", verifyToken, updateUserProfileController);
+router.post("/update-profile/:id", verifyJwtToken, updateUserProfileController);
 
-router.delete("/delete-profile/:id", verifyToken, deleteUserProfileController);
+router.delete(
+  "/delete-profile/:id",
+  verifyJwtToken,
+  deleteUserProfileController
+);
 
-router.get("/:id", verifyToken, getLanlordDetailsController);
+router.get("/:id", verifyJwtToken, getLanlordDetailsController);
 
 router.post("/emailSubscription", createEmailSubscriptionController);
 

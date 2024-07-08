@@ -48,7 +48,7 @@ export default function PropertySummaryPage() {
 
           <Stepper />
 
-          <div>
+          <div className="">
             {/* */}
 
             {allStepsCompleted() ? (

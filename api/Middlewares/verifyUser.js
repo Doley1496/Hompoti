@@ -4,54 +4,141 @@ import { errorHandler } from "./errorHandler.js";
 
 import JWT from "jsonwebtoken";
 
-export const verifyToken = (req, res, next) => {
+export const verifyJwtToken = (req, res, next) => {
   /* */
 
-  /*  We will get the token from the cookie and we directly cannot get any data from the cookie.
-      So in-order to get any data from the cookie we need to install a package call cookie-parser in 
-      the api side. 
+  // const authHeader = req.headers.authorization || req.headers.Authorization;
 
-      Getting the token from the cookie using cookie-parser. Inside the cookie we have provided the 
-      name of the token as access_token so we will use access_token as the token name. 
-  */
+  // if (!authHeader?.startsWith("Bearer ")) {
+  //   return next(errorHandler(401, "Unauthorised User"));
+  // }
 
-  const token = req.cookies.access_token;
+  const cookies = req.headers.cookie;
 
-  if (!token) {
-    /* */
-
+  if (!cookies) {
     return next(
       errorHandler(
         401,
-        "Your session is expired. Please logout from your account and login again."
+        "You have deleted your cookie. Please logout and login again"
       )
     );
+  }
+
+  const token = cookies.split("=")[1];
+
+  JWT.verify(
+    token, // String(token)
+    process.env.ACCESS_TOKEN_JWT_SECRET,
+    async (error, decodedData) => {
+      /* */
+
+      if (error) {
+        res.clearCookie("accessToken", {
+          httpOnly: true,
+          sameSite: "lax",
+          path: "/",
+        });
+
+        return next(errorHandler(403, "Forbidden : Invalid Token Id"));
+      }
+
+      req.user = decodedData;
+
+      next();
+
+      /* */
+    }
+  );
+
+  /* */
+};
+
+export const verifyJwtTokens = (req, res, next) => {
+  /* */
+
+  // const authHeader = req.headers.authorization || req.headers.Authorization;
+
+  // if (!authHeader?.startsWith("Bearer ")) {
+  //   return next(errorHandler(401, "Unauthorised User"));
+  // }
+
+  // const token = authHeader.split(" ")[1];
+
+  const accessToken = req.cookies.accessToken;
+
+  if (!accessToken) {
+    /* */
+
+    renewToken();
 
     /* */
   }
 
-  /* If there is a token we will check(verify) the token is correct or not using json-web-token. */
+  JWT.verify(
+    accessToken, // String(token)
+    process.env.ACCESS_TOKEN_JWT_SECRET,
+    async (error, decodedData) => {
+      /* */
 
-  JWT.verify(token, process.env.JWT_SECRET, (err, user) => {
-    /* */
+      if (error)
+        return next(errorHandler(403, "Forbidden : Invalid Access Token Id"));
 
-    /* If there is an error we will return an error by passing the middleware function errorHandler() that we 
-       created in errorHandler.js with a statusCode of 403 and message as "Forbiddden" inside the next() function. 
-    */
-    if (err) return next(errorHandler(403, "Forbidden"));
+      req.user = decodedData;
 
-    /* If there is no error we will save the user to the request and send this user to the controller to 
-       update the user. 
-    */
-    req.user = user;
+      next();
 
-    /* After saving the user we will go to the next function and execute it.
-       ie.. we are sending this user to the updateProfileController to update the user. 
-    */
-    next();
+      /* */
+    }
+  );
 
-    /* */
-  });
+  /* */
+};
+
+const renewToken = (req, res, next) => {
+  /* */
+
+  let tokenExist = false;
+
+  const refreshToken = req.cookies.refreshToken;
+
+  if (!refreshToken) {
+    return next(errorHandler(403, "Token Expired"));
+  }
+
+  JWT.verify(
+    refreshToken,
+    process.env.REFRESH_TOKEN_JWT_SECRET,
+    async (error, decodedData) => {
+      /* */
+
+      if (error)
+        return next(errorHandler(403, "Forbidden : Invalid Refresh Token"));
+
+      const accessToken = JWT.sign(
+        {
+          userId: decodedData.id,
+        },
+        process.env.ACCESS_TOKEN_JWT_SECRET,
+        { expiresIn: "30s" }
+      );
+
+      res.cookie("accessToken", accessToken, {
+        expires: new Date(Date.now() + 30000), // 4 hours
+        httpOnly: true, // accessible only by the web server
+        sameSite: "lax", // cross-site cookie
+        path: "/",
+
+        // secure: true // for https
+        // maxAge: 7 * 24 * 60 * 60 * 1000, // expiry time
+      });
+
+      tokenExist = true;
+
+      /* */
+    }
+  );
+
+  return tokenExist;
 
   /* */
 };

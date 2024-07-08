@@ -13,6 +13,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 
 import {
+  signInStart,
   signInSuccess,
   signInFailure,
 } from "../../Redux/Actions/authActions.jsx";
@@ -28,8 +29,6 @@ import { IoPersonSharp } from "react-icons/io5";
 import { RiLockPasswordFill } from "react-icons/ri";
 
 import { MdMarkEmailUnread } from "react-icons/md";
-
-import { FaPhoneVolume } from "react-icons/fa6";
 
 let SERVER_URL = import.meta.env.VITE_SERVER_URL;
 
@@ -84,6 +83,8 @@ export default function SignUpPage() {
       /* */
 
       event.preventDefault();
+
+      dispatch(signInStart());
 
       await ValidationSchema.validate(Inputs, { abortEarly: false });
 

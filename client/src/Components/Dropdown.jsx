@@ -27,7 +27,7 @@ export default function Dropdown({ handleClick }) {
 
   const { currentUser } = useSelector((state) => state.user);
 
-  const handleLogOut = async (event) => {
+  const handleLogOut = async () => {
     /* */
 
     try {
@@ -35,7 +35,14 @@ export default function Dropdown({ handleClick }) {
 
       dispatch(signOutUserStart());
 
-      const res = await fetch(`${VITE_SERVER_URL}/api/auth/signOut`);
+      const res = await fetch(
+        `${VITE_SERVER_URL}/api/auth/signOut`,
+
+        {
+          method: "GET",
+          credentials: "include",
+        }
+      );
 
       const data = await res.json();
 
@@ -68,9 +75,9 @@ export default function Dropdown({ handleClick }) {
     /* */
   };
 
-  /* ************************************************************************************ */
-  /* ************************************************************************************ */
-  /* ************************************************************************************ */
+  /* ******************************************************************* */
+  /* ************************    return     **************************** */
+  /* ******************************************************************* */
 
   return (
     /* */

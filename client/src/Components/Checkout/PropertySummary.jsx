@@ -8,11 +8,13 @@ import { Box, Button, Grid } from "@mui/material";
 
 import { Link } from "react-router-dom";
 
-import { useSelector } from "react-redux";
-
 import AddressCard from "./AddressCard.jsx";
 
+import { useSelector, useDispatch } from "react-redux";
+
 import { toast } from "react-toastify";
+
+import { signOutUserSuccess } from "../../Redux/Actions/authActions.jsx";
 
 let VITE_SERVER_URL = import.meta.env.VITE_SERVER_URL;
 
@@ -20,6 +22,8 @@ let userId = localStorage.getItem("id");
 
 export default function PropertySummary() {
   /* */
+
+  const dispatch = useDispatch();
 
   const { currentUser } = useSelector((state) => state.user);
 
@@ -63,11 +67,35 @@ export default function PropertySummary() {
         if (data.success === false) {
           /* */
 
-          toast.error(data.message);
+          if (data.statusCode === 401) {
+            /* */
 
-          setLoading(false);
+            setLoading(false);
 
-          return;
+            dispatch(signOutUserSuccess());
+
+            localStorage.clear();
+
+            alert(
+              "Your cookie is mismatched. You are signing out of our account!"
+            );
+
+            toast.success("Successfully Logged Out");
+
+            return;
+
+            /* */
+          } else {
+            /* */
+
+            toast.error(data.message);
+
+            setLoading(false);
+
+            return;
+
+            /* */
+          }
 
           /* */
         }
@@ -83,7 +111,7 @@ export default function PropertySummary() {
     } catch (error) {
       /* */
 
-      toast.error("Something went wrong.");
+      toast.error("Something went wrong. Please try again later!");
 
       setLoading(false);
 

@@ -346,11 +346,45 @@ export default function ListingPage() {
 
       const data = await res.json();
 
-      setLoading(false);
-
       if (data.success === false) {
-        setError(data.message);
+        /* */
+
+        if (data.statusCode === 401) {
+          /* */
+
+          setLoading(false);
+
+          dispatch(signOutUserSuccess());
+
+          localStorage.clear();
+
+          alert(
+            "Your cookie is mismatched. You are signing out of our account!"
+          );
+
+          toast.success("Successfully Logged Out");
+
+          return;
+
+          /* */
+        } else {
+          /* */
+
+          toast.error(data.message);
+
+          setError(data.message);
+
+          setLoading(false);
+
+          return;
+
+          /* */
+        }
+
+        /* */
       }
+
+      setLoading(false);
 
       /* After successful creating the listing we will redirect the user to the following route. */
       navigate(`/listing/${data._id}`);
@@ -423,9 +457,9 @@ export default function ListingPage() {
     /* */
   };
 
-  /* ************************************************************************************* */
-  /* ********************************** useEffect() hooks ******************************** */
-  /* ************************************************************************************* */
+  /* ******************************************************************* */
+  /* *******************  useEffect() hooks  *************************** */
+  /* ******************************************************************* */
 
   useEffect(() => {
     /* */
@@ -435,9 +469,9 @@ export default function ListingPage() {
     /* */
   }, [params.listingId]);
 
-  /* ************************************************************************************* */
-  /* **********************************    return    ************************************* */
-  /* ************************************************************************************* */
+  /* ******************************************************************* */
+  /* ************************    return     **************************** */
+  /* ******************************************************************* */
 
   return (
     /* */

@@ -10,7 +10,7 @@ import PageNavigation from "../../Components/PageNavigation.jsx";
 
 import { Link } from "react-router-dom";
 
-export default function PaymentSuccess() {
+export default function EmailSubscriptionSuccessPage() {
   /* */
 
   return (

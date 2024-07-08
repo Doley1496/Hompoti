@@ -6,14 +6,20 @@ import styled from "styled-components";
 
 import Layout from "../../Components/Layout.jsx";
 
-import { useSelector } from "react-redux";
-
 import { Link } from "react-router-dom";
+
+import { useSelector, useDispatch } from "react-redux";
+
+import { toast } from "react-toastify";
+
+import { signOutUserSuccess } from "../../Redux/Actions/authActions.jsx";
 
 let SERVER_URL = import.meta.env.VITE_SERVER_URL;
 
 export default function ProfilePage() {
   /* */
+
+  const dispatch = useDispatch();
 
   const { currentUser } = useSelector((state) => state.user);
 
@@ -21,12 +27,7 @@ export default function ProfilePage() {
 
   const [error, setError] = useState(false);
 
-  /* ************************************************************************************ */
-  /* *****************************   FUNCTIONS              ***************************** */
-  /* ************************************************************************************ */
-  /* ************************************************************************************ */
-
-  const getAllListings = async (event) => {
+  const getAllListings = async () => {
     /* */
 
     try {
@@ -44,11 +45,33 @@ export default function ProfilePage() {
       if (data.success === false) {
         /* */
 
-        setError(data.message);
+        if (data.statusCode === 401) {
+          /* */
 
-        toast.error(data.message);
+          dispatch(signOutUserSuccess());
 
-        return;
+          localStorage.clear();
+
+          alert(
+            "Your cookie is mismatched. You are signing out of our account!"
+          );
+
+          toast.success("Successfully Logged Out");
+
+          return;
+
+          /* */
+        } else {
+          /* */
+
+          setError(data.message);
+
+          toast.error(data.message);
+
+          return;
+
+          /* */
+        }
 
         /* */
       }
@@ -88,11 +111,37 @@ export default function ProfilePage() {
       const data = await res.json();
 
       if (data.success === false) {
-        setError(data.message);
+        /* */
 
-        toast.error(data.message);
+        if (data.statusCode === 401) {
+          /* */
 
-        return;
+          dispatch(signOutUserSuccess());
+
+          localStorage.clear();
+
+          alert(
+            "Your cookie is mismatched. You are signing out of our account!"
+          );
+
+          toast.success("Successfully Logged Out");
+
+          return;
+
+          /* */
+        } else {
+          /* */
+
+          toast.error(data.message);
+
+          setError(data.message);
+
+          return;
+
+          /* */
+        }
+
+        /* */
       }
 
       /* If the delete is successfull we will set the userListings array of the useState() hook using 
@@ -125,9 +174,9 @@ export default function ProfilePage() {
     /* */
   };
 
-  /* ************************************************************************************* */
-  /* ********************************** useEffect() hooks ******************************** */
-  /* ************************************************************************************* */
+  /* ******************************************************************* */
+  /* *******************  useEffect() hooks  *************************** */
+  /* ******************************************************************* */
 
   useEffect(() => {
     /* */
@@ -137,9 +186,9 @@ export default function ProfilePage() {
     /* */
   }, [currentUser]);
 
-  /* ************************************************************************************* */
-  /* ************************************************************************************* */
-  /* ************************************************************************************* */
+  /* ******************************************************************* */
+  /* ************************    return     **************************** */
+  /* ******************************************************************* */
 
   return (
     /* */

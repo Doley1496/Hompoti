@@ -94,6 +94,8 @@ function PrevArrow(props) {
 
 let SERVER_URL = import.meta.env.VITE_SERVER_URL;
 
+let firstRender = true;
+
 export default function Listings() {
   /* */
 
@@ -182,6 +184,33 @@ export default function Listings() {
     /* */
   };
 
+  const refreshToken = async () => {
+    /* */
+
+    try {
+      /* */
+
+      const res = await fetch(`${SERVER_URL}/api/auth/refreshToken`, {
+        method: "GET",
+        credentials: "include",
+      });
+
+      const data = await res.json();
+
+      return data;
+
+      /* */
+    } catch (error) {
+      /* */
+
+      console.log(error);
+
+      /* */
+    }
+
+    /* */
+  };
+
   /* ************************************************************************************* */
   /* ********************************** useEffect() hooks ******************************** */
   /* ************************************************************************************* */
@@ -193,6 +222,30 @@ export default function Listings() {
 
     /* */
   }, [params.listingId]);
+
+  // useEffect(() => {
+  //   /* */
+
+  //   if (firstRender) {
+  //     /* */
+
+  //     firstRender = false;
+
+  //     fetchRentListings();
+  //     fetchSellListings();
+  //     fetchOfferListings();
+
+  //     /* */
+  //   }
+
+  //   let interval = setInterval(() => {
+  //     refreshToken();
+  //   }, 1000 * 28);
+
+  //   return () => clearInterval(interval);
+
+  //   /* */
+  // }, []);
 
   /* ************************************************************************************* */
   /* **********************************    return    ************************************* */

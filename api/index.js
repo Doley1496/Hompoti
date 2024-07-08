@@ -43,7 +43,7 @@ const corsOptions = {
 
     const allowedOrigins = [
       "http://localhost:5173",
-      "https://hompoti-client.vercel.app",
+      "https://hompoti.vercel.app",
     ];
 
     const isAllowed = allowedOrigins.includes(origin);

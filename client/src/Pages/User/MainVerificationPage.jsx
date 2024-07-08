@@ -15,15 +15,17 @@ import { useParams } from "react-router-dom";
 import { CgSpinner } from "react-icons/cg";
 
 import {
+  signInStart,
   signInSuccess,
   signInFailure,
+  setAccessToken,
 } from "../../Redux/Actions/authActions.jsx";
 
 let VITE_SERVER_URL = import.meta.env.VITE_SERVER_URL;
 
 let localStorageEmail = localStorage.getItem("email");
 
-export default function VerificationPage() {
+export default function MainVerificationPage() {
   /* */
 
   const dispatch = useDispatch();
@@ -131,6 +133,8 @@ export default function VerificationPage() {
     try {
       /* */
 
+      dispatch(signInStart());
+
       const res = await fetch(
         `${VITE_SERVER_URL}/api/auth/verify-email/${userId}/${token}/${email}`,
         {
@@ -155,9 +159,13 @@ export default function VerificationPage() {
         /* */
       }
 
-      window.localStorage.setItem("id", data._id);
+      setLoading(false);
 
-      dispatch(signInSuccess(data));
+      window.localStorage.setItem("id", data.user._id);
+
+      dispatch(signInSuccess(data.user));
+
+      dispatch(setAccessToken(data.token));
 
       setEmailVerifiedToast(true);
 
@@ -167,15 +175,13 @@ export default function VerificationPage() {
 
       toast.success("Successfully Logged In");
 
-      setLoading(false);
-
       /* Catching the error and dispatching it to the frontend. */
     } catch (error) {
       /* */
 
       dispatch(signInFailure(error.message));
 
-      toast.error("Something went wrong");
+      toast.error("Something went wrong. Please try again");
 
       console.log(error);
 

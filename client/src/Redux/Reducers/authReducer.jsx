@@ -11,6 +11,8 @@ const initialState = {
   error: null,
   loading: false,
 
+  token: null,
+
   all_filtered_users: [],
   usersCount: 0,
   resultPerPage: 0,
@@ -73,6 +75,7 @@ export const authReducer = (state = initialState, action) => {
         ...state,
         isLoggedIn: false,
         currentUser: null,
+        token: null,
         error: null,
         loading: false,
       };
@@ -161,6 +164,25 @@ export const authReducer = (state = initialState, action) => {
         ...state,
         loading: false,
         error: action.payload,
+      };
+
+    case authActionTypes.SET_ACCESS_TOKEN:
+      return {
+        ...state,
+        isLoggedIn: true,
+        token: action.payload,
+        error: null,
+        loading: false,
+      };
+
+    case authActionTypes.DELETE_ACCESS_TOKEN:
+      return {
+        ...state,
+        isLoggedIn: false,
+        token: null,
+        currentUser: null,
+        error: null,
+        loading: false,
       };
 
     default:

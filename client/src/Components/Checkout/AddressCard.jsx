@@ -6,7 +6,11 @@ import styled from "styled-components";
 
 import { useLocation } from "react-router-dom";
 
+import { useDispatch } from "react-redux";
+
 import { toast } from "react-toastify";
+
+import { signOutUserSuccess } from "../../Redux/Actions/authActions.jsx";
 
 import { MdEditSquare } from "react-icons/md";
 import { RiDeleteBin5Line } from "react-icons/ri";
@@ -19,6 +23,8 @@ let VITE_SERVER_URL = import.meta.env.VITE_SERVER_URL;
 
 export default function AddressCard() {
   /* */
+
+  const dispatch = useDispatch();
 
   const location = useLocation();
 
@@ -76,11 +82,35 @@ export default function AddressCard() {
         if (data.success === false) {
           /* */
 
-          toast.error(data.message);
+          if (data.statusCode === 401) {
+            /* */
 
-          setLoading(false);
+            setLoading(false);
 
-          return;
+            dispatch(signOutUserSuccess());
+
+            localStorage.clear();
+
+            alert(
+              "Your cookie is mismatched. You are signing out of our account!"
+            );
+
+            toast.success("Successfully Logged Out");
+
+            return;
+
+            /* */
+          } else {
+            /* */
+
+            toast.error(data.message);
+
+            setLoading(false);
+
+            return;
+
+            /* */
+          }
 
           /* */
         }
@@ -115,6 +145,8 @@ export default function AddressCard() {
       if (userId) {
         /* */
 
+        setLoading(true);
+
         const res = await fetch(
           `${VITE_SERVER_URL}/api/address/delete-billingAddress/${addressId}`,
           {
@@ -133,10 +165,40 @@ export default function AddressCard() {
         if (data.success === false) {
           /* */
 
-          toast.error(data.message);
+          if (data.statusCode === 401) {
+            /* */
 
-          return;
+            setLoading(false);
+
+            dispatch(signOutUserSuccess());
+
+            localStorage.clear();
+
+            alert(
+              "Your cookie is mismatched. You are signing out of our account!"
+            );
+
+            toast.success("Successfully Logged Out");
+
+            return;
+
+            /* */
+          } else {
+            /* */
+
+            toast.error(data.message);
+
+            setLoading(false);
+
+            return;
+
+            /* */
+          }
+
+          /* */
         }
+
+        setLoading(false);
 
         toast.success("Your address is deleted");
 
@@ -158,7 +220,9 @@ export default function AddressCard() {
 
       console.log(error);
 
-      toast.error("Something went wrong");
+      setLoading(false);
+
+      toast.error("Something went wrong. Please try agin later!");
 
       /* */
     }
@@ -166,9 +230,9 @@ export default function AddressCard() {
     /* */
   };
 
-  /* ************************************************************************************** */
-  /* ******************************** useEffect() hooks *********************************** */
-  /* ************************************************************************************** */
+  /* ******************************************************************* */
+  /* *******************  useEffect() hooks  *************************** */
+  /* ******************************************************************* */
 
   useEffect(() => {
     /* */
@@ -185,6 +249,10 @@ export default function AddressCard() {
 
     /* */
   }, [billingUserAddressLength, billingUser]);
+
+  /* ******************************************************************* */
+  /* ************************    return     **************************** */
+  /* ******************************************************************* */
 
   /* */
   return (

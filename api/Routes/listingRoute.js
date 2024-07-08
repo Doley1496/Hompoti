@@ -13,25 +13,25 @@ import {
   getAllSearchListingsController,
 } from "../Controllers/listingController.js";
 
-import { verifyToken } from "./../Middlewares/verifyUser.js";
+import { verifyJwtToken } from "./../Middlewares/verifyUser.js";
 
-router.post("/createListing", verifyToken, createListingController);
+router.post("/createListing", verifyJwtToken, createListingController);
 
-router.delete("/deleteListing/:id", verifyToken, deleteListingController);
+router.delete("/deleteListing/:id", verifyJwtToken, deleteListingController);
 
-router.post("/updateListing/:id", verifyToken, updateListingController);
+router.post("/updateListing/:id", verifyJwtToken, updateListingController);
 
 router.get(
   "/getParticularListingDetails/:id",
   getParticularListingDetailsController
 );
 
+router.get("/getAllSearchListings", getAllSearchListingsController);
+
 router.get(
   "/getAll-listings/:id",
-  verifyToken,
+  verifyJwtToken,
   getProfileOwnerAllListingsController
 );
-
-router.get("/getAllSearchListings", getAllSearchListingsController);
 
 export default router;

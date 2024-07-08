@@ -25,6 +25,15 @@ export default function SendLink() {
     email: "",
   });
 
+  const userEmail = Inputs.email;
+
+  const [emailLoading, setEmailLoading] = useState(false);
+
+  const [emailVerificationSendSuccess, setEmailVerificationSendSuccess] =
+    useState(false);
+
+  const [hideVerifyEmailButton, setHideVerifyEmailButton] = useState(false);
+
   const change = (event) => {
     /* */
 
@@ -41,6 +50,10 @@ export default function SendLink() {
 
       event.preventDefault();
 
+      setEmailLoading(true);
+
+      setEmailVerificationSendSuccess(false);
+
       const res = await fetch(`${SERVER_URL}/api/auth/send-link`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -55,10 +68,18 @@ export default function SendLink() {
 
         toast.error(data.message);
 
+        setEmailLoading(false);
+
         return;
 
         /* */
       }
+
+      setEmailVerificationSendSuccess(true);
+
+      setEmailLoading(false);
+
+      setHideVerifyEmailButton(true);
 
       toast.success(
         "Password reset link has been successfully send to your email id"
@@ -68,9 +89,11 @@ export default function SendLink() {
     } catch (error) {
       /* */
 
-      toast.error("Something went wrong");
-
       console.log(error);
+
+      toast.error("Something went wrong. Please try again!");
+
+      setEmailLoading(false);
 
       /* */
     }
@@ -78,9 +101,9 @@ export default function SendLink() {
     /* */
   };
 
-  /* ************************************************************************************* */
-  /* **********************************    return    ************************************* */
-  /* ************************************************************************************* */
+  /* ******************************************************************* */
+  /* ************************    return     **************************** */
+  /* ******************************************************************* */
 
   return (
     /* */
@@ -94,6 +117,7 @@ export default function SendLink() {
         <div className="p-3 max-w-2xl mx-auto bg-indigo-400 rounded-lg">
           {/* */}
 
+          {/* *************************************** */}
           {/* Creating a heading for the signIn page. */}
 
           <div className="">
@@ -107,15 +131,19 @@ export default function SendLink() {
             </p>
           </div>
 
+          {/* ************************************************************* */}
           {/* Creating a form to get the user details from the signIn page. */}
 
-          <form className="flex flex-col gap-3 mb-7" onSubmit={handleSendLink}>
+          <form
+            className="flex flex-col gap-3 mb-[60px]"
+            onSubmit={handleSendLink}
+          >
             {/* */}
 
-            {/* ********  Creating an input field to enter email to Reset the password.  ********** */}
+            {/* ************************************************************** */}
+            {/* Creating an input field to enter email to Reset the password : */}
 
             <input
-              /* When we will get showPassword then we will make our type as text otherwise password type. */
               type="email"
               name="email"
               id="email"
@@ -128,49 +156,50 @@ export default function SendLink() {
               ref={emailRef}
             />
 
-            {/* *************  Creating a button to Reset the password.  **************** */}
+            {/* ***************************************** */}
+            {/* Creating a button to Reset the password : */}
 
-            <div className="justify-between mb-4">
-              <button
-                // onClick={sendOTP}
-                disabled={loading}
-                className="bg-red-700 text-gray-300 py-2 px-4 rounded-lg uppercase hover:opacity-95 
-                disabled:opacity-80 text-[17px] font-sans font-bold ml-2 mr-[20px] hover:underline "
+            {!hideVerifyEmailButton ? (
+              <div
+                className="justify-between mb-4"
+                style={{ textAlign: "center" }}
               >
-                {loading ? "Loading..." : "Send Link"}
-              </button>
+                <button
+                  disabled={loading}
+                  className="bg-red-700 text-gray-100 py-[10px] px-[14px] rounded-lg uppercase 
+                  hover:opacity-95 disabled:opacity-80 text-[17px] font-sans font-bold ml-2 mr-[20px]
+                  hover:underline "
+                >
+                  {emailLoading ? "Loading..." : "Send Link"}
+                </button>
 
-              <Link
-                to="/signIn"
-                disabled={loading}
-                className="bg-black text-gray-300 px-[19px] py-[10px] rounded-lg uppercase hover:opacity-95 
-                disabled:opacity-80 text-[17px] font-sans font-bold ml-[180px] responsive-button"
-              >
-                {loading ? "Loading..." : "Back"}
-              </Link>
-            </div>
+                <Link
+                  to="/login"
+                  disabled={loading}
+                  className="bg-black text-gray-100 px-[19px] py-[12px] mt-2 rounded-lg uppercase 
+                  hover:opacity-95 disabled:opacity-80 text-[17px] font-sans font-bold"
+                >
+                  {loading ? "Loading..." : "Go Back"}
+                </Link>
+              </div>
+            ) : (
+              ""
+            )}
 
             {/* */}
           </form>
 
-          {/* *************************************** */}
-          {/* Creating a button to go the login-page. */}
-
-          <Link
-            to="/signIn"
-            disabled={loading}
-            style={{
-              textAlign: "center",
-              display: "block",
-            }}
-          >
-            <button
-              className="bg-slate-700 text-gray-200 p-3 py-[12px] rounded-lg uppercase hover:opacity-95 
-              disabled:opacity-80 text-center text-[20px] mb-4 font-sans font-bold w-[75%]"
+          {emailVerificationSendSuccess ? (
+            <h1
+              className="text-[17px] font-semibold font-sans text-center mt-3 mb-[60px] 
+             text-[#642235] leading-14"
             >
-              {loading ? "Loading..." : "Login"}
-            </button>
-          </Link>
+              Password Reset link has been sent to {userEmail}
+              <br />
+            </h1>
+          ) : (
+            ""
+          )}
 
           {/* */}
         </div>

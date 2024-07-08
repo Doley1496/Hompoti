@@ -39,6 +39,8 @@ const userSchema = new mongoose.Schema(
         "https://img.freepik.com/premium-vector/man-avatar-profile-picture-vector-illustration_268834-538.jpg",
     },
 
+    role: { type: String, enum: ["admin", "customer"], default: "customer" },
+
     /* */
   },
 

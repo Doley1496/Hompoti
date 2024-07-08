@@ -6,9 +6,13 @@ import styled from "styled-components";
 
 import Layout from "../../Components/Layout.jsx";
 
-import { useSelector } from "react-redux";
-
 import { useNavigate } from "react-router-dom";
+
+import { useSelector, useDispatch } from "react-redux";
+
+import { toast } from "react-toastify";
+
+import { signOutUserSuccess } from "../../Redux/Actions/authActions.jsx";
 
 import {
   getDownloadURL,
@@ -23,6 +27,8 @@ let SERVER_URL = import.meta.env.VITE_SERVER_URL;
 
 export default function ListingPage() {
   /* */
+
+  const dispatch = useDispatch();
 
   const navigate = useNavigate();
 
@@ -338,19 +344,45 @@ export default function ListingPage() {
 
       const data = await res.json();
 
-      setLoading(false);
-
       if (data.success === false) {
         /* */
 
-        setError(data.message);
+        if (data.statusCode === 401) {
+          /* */
 
-        toast.error("Your Listing is created");
+          setLoading(false);
 
-        return;
+          dispatch(signOutUserSuccess());
+
+          localStorage.clear();
+
+          alert(
+            "Your cookie is mismatched. You are signing out of our account!"
+          );
+
+          toast.success("Successfully Logged Out");
+
+          return;
+
+          /* */
+        } else {
+          /* */
+
+          toast.error(data.message);
+
+          setLoading(false);
+
+          setError(data.message);
+
+          return;
+
+          /* */
+        }
 
         /* */
       }
+
+      setLoading(false);
 
       navigate(`/listing/${data?._id}`);
 
@@ -370,10 +402,9 @@ export default function ListingPage() {
     /* */
   };
 
-  /* **************************************************************************************** */
-  /* **************************************************************************************** */
-  /* **************************************************************************************** */
-  /* **************************************************************************************** */
+  /* ******************************************************************* */
+  /* ************************    return     **************************** */
+  /* ******************************************************************* */
 
   return (
     /* */

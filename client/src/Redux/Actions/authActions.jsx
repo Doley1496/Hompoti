@@ -68,12 +68,11 @@ export const signOutUserStart = () => {
   /* */
 };
 
-export const signOutUserSuccess = (userDetails) => {
+export const signOutUserSuccess = () => {
   /* */
 
   return {
     type: authActionTypes.SIGN_OUT_SUCCESS,
-    payload: userDetails,
   };
 
   /* */
@@ -197,3 +196,24 @@ export const getAllUsers =
       /* */
     }
   };
+
+export const setAccessToken = (userToken) => {
+  /* */
+
+  return {
+    type: authActionTypes.SET_ACCESS_TOKEN,
+    payload: userToken,
+  };
+
+  /* */
+};
+
+export const deleteAccessToken = () => {
+  /* */
+
+  return {
+    type: authActionTypes.DELETE_ACCESS_TOKEN,
+  };
+
+  /* */
+};

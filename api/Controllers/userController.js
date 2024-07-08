@@ -20,10 +20,7 @@ import { errorHandler } from "./../Middlewares/errorHandler.js";
 export const updateUserProfileController = async (req, res, next) => {
   /* */
 
-  try {
-    /* */
-
-    /* 1st we will check the user who is trying to update exist in our database or not.
+  /* 1st we will check the user who is trying to update exist in our database or not.
        ie. he is the real owner of that account or not.
 
        If the id of the user ( ie. the user we save in req.user in verifyToken function of verifyUser.js ) 
@@ -35,9 +32,12 @@ export const updateUserProfileController = async (req, res, next) => {
        Else we will return an error by passing the middleware function errorHandler() that we created in 
        errorHandler.js with a statusCode of 401 and message as "You can only update your own account!."
        inside the next() function.
-    */
+  */
 
-    if (req.user.id === req.params.id) {
+  try {
+    /* */
+
+    if (req.user.userId === req.params.id) {
       /* */
 
       if (req.body.password) {
@@ -96,10 +96,7 @@ export const updateUserProfileController = async (req, res, next) => {
 export const deleteUserProfileController = async (req, res, next) => {
   /* */
 
-  try {
-    /* */
-
-    /* 1st we will check the user who is trying to delete exist in our database or not.
+  /* 1st we will check the user who is trying to delete exist in our database or not.
        ie. he is the real owner of that account or not.
 
        If the id of the user ( ie. the user we save in req.user in verifyToken function of verifyUser.js ) 
@@ -113,7 +110,10 @@ export const deleteUserProfileController = async (req, res, next) => {
        inside the next() function.
     */
 
-    if (req.user.id === req.params.id) {
+  try {
+    /* */
+
+    if (req.user.userId === req.params.id) {
       /* */
 
       await userModel.findByIdAndDelete(req.params.id);

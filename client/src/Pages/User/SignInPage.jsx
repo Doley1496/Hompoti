@@ -13,8 +13,10 @@ import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 
 import {
+  signInStart,
   signInSuccess,
   signInFailure,
+  setAccessToken,
 } from "../../Redux/Actions/authActions.jsx";
 
 import { doingVerificationStart } from "../../Redux/Actions/othersActions.jsx";
@@ -71,6 +73,8 @@ export default function SignInPage() {
 
       event.preventDefault();
 
+      dispatch(signInStart());
+
       setLoading(true);
 
       const res = await fetch(`${SERVER_URL}/api/auth/signIn`, {
@@ -80,7 +84,7 @@ export default function SignInPage() {
         credentials: "include",
       });
 
-      let data = await res.json();
+      const data = await res.json();
 
       if (data.success === false) {
         /* */
@@ -119,9 +123,11 @@ export default function SignInPage() {
         /* */
       }
 
-      window.localStorage.setItem("id", data._id);
+      window.localStorage.setItem("id", data.user._id);
 
-      dispatch(signInSuccess(data));
+      dispatch(signInSuccess(data.user));
+
+      dispatch(setAccessToken(data.token));
 
       toast.success("Successfully Logged In");
 
@@ -141,9 +147,9 @@ export default function SignInPage() {
     /* */
   };
 
-  /* ************************************************************************************* */
-  /* **********************************    return    ************************************* */
-  /* ************************************************************************************* */
+  /* ******************************************************************* */
+  /* ************************    return     **************************** */
+  /* ******************************************************************* */
 
   return (
     /* */

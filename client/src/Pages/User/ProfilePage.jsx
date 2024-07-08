@@ -8,10 +8,6 @@ import PageNavigation from "../../Components/PageNavigation.jsx";
 
 import styled from "styled-components";
 
-import { useSelector, useDispatch } from "react-redux";
-
-import { useNavigate } from "react-router-dom";
-
 import {
   getDownloadURL,
   getStorage,
@@ -30,7 +26,13 @@ import {
   deleteUserFailure,
 } from "../../Redux/Actions/authActions.jsx";
 
+import { useSelector, useDispatch } from "react-redux";
+
+import { useNavigate } from "react-router-dom";
+
 import { toast } from "react-toastify";
+
+import { signOutUserSuccess } from "../../Redux/Actions/authActions.jsx";
 
 import { Checkmark } from "react-checkmark";
 
@@ -115,9 +117,37 @@ export default function ProfilePage() {
       const data = await res.json();
 
       if (data.success === false) {
-        dispatch(deleteUserFailure(data.message));
-        toast.error(data.message);
-        return;
+        /* */
+
+        if (data.statusCode === 401) {
+          /* */
+
+          dispatch(signOutUserSuccess());
+
+          localStorage.clear();
+
+          alert(
+            "Your cookie is mismatched. You are signing out of our account!"
+          );
+
+          toast.success("Successfully Logged Out");
+
+          return;
+
+          /* */
+        } else {
+          /* */
+
+          dispatch(deleteUserFailure(data.message));
+
+          toast.error(data.message);
+
+          return;
+
+          /* */
+        }
+
+        /* */
       }
 
       dispatch(deleteUserSuccess(data));
@@ -168,11 +198,33 @@ export default function ProfilePage() {
       if (data.success === false) {
         /* */
 
-        dispatch(updateUserFailure(data.message));
+        if (data.statusCode === 401) {
+          /* */
 
-        toast.error(data.message);
+          dispatch(signOutUserSuccess());
 
-        return;
+          localStorage.clear();
+
+          alert(
+            "Your cookie is mismatched. You are signing out of our account!"
+          );
+
+          toast.success("Successfully Logged Out");
+
+          return;
+
+          /* */
+        } else {
+          /* */
+
+          dispatch(updateUserFailure(data.message));
+
+          toast.error(data.message);
+
+          return;
+
+          /* */
+        }
 
         /* */
       }
@@ -272,7 +324,6 @@ export default function ProfilePage() {
     try {
       /* */
 
-      /* Preventing the default refresh of the web page. */
       event.preventDefault();
 
       setEmailLoading(true);
@@ -500,7 +551,7 @@ export default function ProfilePage() {
                 id="email"
                 placeholder="Enter Your Email."
                 onChange={change}
-                value={currentUser.email ? currentUser.email : Inputs.email}
+                value={currentUser ? currentUser.email : Inputs.email}
                 className="border bg-slate-600 text-white py-4 px-3 rounded-lg w-[100%] 
                 responsive-login-form"
               />
