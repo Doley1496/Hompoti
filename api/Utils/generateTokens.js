@@ -19,10 +19,10 @@ export const generateTokens = async (res, user) => {
     res.cookie("accessToken", accessToken, {
       expires: new Date(Date.now() + 86400 * 1000), // 1 Day
       httpOnly: true, // accessible only by the web server
-      secure: true, // for https
-      sameSite: "lax", // cross-site cookie
       path: "/",
+
       secure: true, // for https
+      sameSite: "none", // cross-site cookie for https
     });
 
     // const refreshToken = JWT.sign(
@@ -36,14 +36,17 @@ export const generateTokens = async (res, user) => {
     // res.cookie("refreshToken", refreshToken, {
     //   expires: new Date(Date.now() + 60000), // 1minute
     //   httpOnly: true, // accessible only by the web server
-    //   sameSite: "lax", // cross-site cookie
+    //   sameSite: "lax", // cross-site cookie for http
     //   path: "/",
 
-    //   // secure: true // for https
-    //   // maxAge: 7 * 24 * 60 * 60 * 1000, // expiry time
+    //   //  sameSite: "lax", // cross-site cookie for http
+    //   //  sameSite: "none", // cross-site cookie for https
+    //   //  secure: true // for https
+    //   //  maxAge: 7 * 24 * 60 * 60 * 1000, // expiry time
 
     //   // 1 Day = 86400 * 1000
     //   // 1 hour = 3600 * 1000
+
     // });
 
     const { password: pass, ...remainingUserDetails } = user._doc;
