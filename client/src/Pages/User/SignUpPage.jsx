@@ -69,8 +69,8 @@ export default function SignUpPage() {
       setInputs({ ...Inputs, [event.target.id]: event.target.value });
     }
 
-    if (event.target.id === "terms") {
-      setInputs({ ...Inputs, [event.target.id]: event.target.checked });
+    if (event.target.type === "radio") {
+      setInputs({ ...Inputs, [event.target.name]: event.target.value });
     }
 
     /* */
@@ -328,25 +328,26 @@ export default function SignUpPage() {
               {/* ******************** */}
               {/* Terms and conditions */}
 
-              <div>
+              <div className="mt-4">
                 <input
-                  type="checkbox"
+                  type="radio"
                   name="terms"
                   id="terms"
+                  value="true"
                   className="text-2xl"
                   checked={Inputs.terms}
                   onChange={change}
                 />
-                <span className="text-[18px] font-bold font-mono ml-3 responsive-terms">
+                <span className="text-[18px] font-bold font-sans ml-3 responsive-terms">
                   All terms and conditions apply
                 </span>
-
-                {errors.terms && (
-                  <div className="text-[16px] text-[#72263b] text-center font-semibold font-sans mb-4">
-                    {errors.terms}
-                  </div>
-                )}
               </div>
+
+              {errors.terms && (
+                <div className="text-[16px] text-[#72263b] text-center font-semibold font-sans mb-4">
+                  {errors.terms}
+                </div>
+              )}
 
               {/* ******************************* */}
               {/*  Creating a button to Register. */}

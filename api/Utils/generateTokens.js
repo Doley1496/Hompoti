@@ -22,6 +22,7 @@ export const generateTokens = async (res, user) => {
       secure: true, // for https
       sameSite: "lax", // cross-site cookie
       path: "/",
+      secure: true, // for https
     });
 
     // const refreshToken = JWT.sign(
