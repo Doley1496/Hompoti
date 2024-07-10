@@ -218,11 +218,13 @@ export default function HomePage() {
     /* */
 
     fetchRentListings();
+
     fetchSellListings();
+
     fetchOfferListings();
 
     /* */
-  }, []);
+  }, [offerListings, sellListings, rentListings]);
 
   /* ************************************************************************************* */
   /* **********************************    return    ************************************* */

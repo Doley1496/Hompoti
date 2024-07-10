@@ -174,7 +174,7 @@ export default function SendLink() {
                 </button>
 
                 <Link
-                  to="/login"
+                  to="/signIn"
                   disabled={loading}
                   className="bg-black text-gray-100 px-[19px] py-[12px] mt-2 rounded-lg uppercase 
                   hover:opacity-95 disabled:opacity-80 text-[17px] font-sans font-bold"

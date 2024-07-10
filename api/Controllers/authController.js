@@ -295,8 +295,12 @@ export const SignOutController = async (req, res, next) => {
 
     res.clearCookie("accessToken", {
       httpOnly: true,
-      sameSite: "lax",
+      secure: true,
+      sameSite: "none",
       path: "/",
+
+      // secure: false, // for http
+      // sameSite: "lax", // cross-site cookie for http
     });
 
     res.status(200).json("User has been logged Out!");

@@ -54,7 +54,9 @@ export default function ProfilePage() {
 
   const [Inputs, setInputs] = useState({});
 
-  const { currentUser, loading } = useSelector((state) => state.user);
+  const { currentUser } = useSelector((state) => state.user);
+
+  const [loading, setLoading] = useState(false);
 
   const [updatedMessage, setUpdatedMessage] = useState(false);
 
@@ -104,6 +106,8 @@ export default function ProfilePage() {
 
       event.preventDefault();
 
+      setLoading(true);
+
       dispatch(deleteUserStart());
 
       const res = await fetch(
@@ -122,6 +126,8 @@ export default function ProfilePage() {
         if (data.statusCode === 401) {
           /* */
 
+          setLoading(false);
+
           dispatch(signOutUserSuccess());
 
           localStorage.clear();
@@ -138,6 +144,8 @@ export default function ProfilePage() {
         } else {
           /* */
 
+          setLoading(false);
+
           dispatch(deleteUserFailure(data.message));
 
           toast.error(data.message);
@@ -149,6 +157,8 @@ export default function ProfilePage() {
 
         /* */
       }
+
+      setLoading(false);
 
       dispatch(deleteUserSuccess(data));
 
@@ -162,6 +172,8 @@ export default function ProfilePage() {
       /* Catching the error and dispatching it. */
     } catch (error) {
       /* */
+
+      setLoading(false);
 
       dispatch(deleteUserFailure(error.message));
 
@@ -180,6 +192,8 @@ export default function ProfilePage() {
       /* */
 
       event.preventDefault();
+
+      setLoading(true);
 
       dispatch(updateUserStart());
 
@@ -201,6 +215,8 @@ export default function ProfilePage() {
         if (data.statusCode === 401) {
           /* */
 
+          setLoading(false);
+
           dispatch(signOutUserSuccess());
 
           localStorage.clear();
@@ -217,6 +233,8 @@ export default function ProfilePage() {
         } else {
           /* */
 
+          setLoading(false);
+
           dispatch(updateUserFailure(data.message));
 
           toast.error(data.message);
@@ -229,6 +247,8 @@ export default function ProfilePage() {
         /* */
       }
 
+      setLoading(false);
+
       dispatch(updateUserSuccess(data));
 
       setUpdatedMessage(true);
@@ -238,6 +258,8 @@ export default function ProfilePage() {
       /* Catching the error and dispatching it. */
     } catch (error) {
       /* */
+
+      setLoading(false);
 
       dispatch(updateUserFailure(error.message));
 
@@ -425,7 +447,7 @@ export default function ProfilePage() {
           {/* Creating a heading for the profile page. */}
 
           <h1
-            className="text-[20px] font-sans font-bold my-4 uppercase text-[#a94c4c] 
+            className="text-[30px] font-sans font-bold my-4 uppercase text-[#a94c4c] 
             responsive-heading-profileName"
             style={{
               textAlign: "center",
@@ -628,7 +650,6 @@ export default function ProfilePage() {
             {/* Creating a button to Update the user-profile details. */}
 
             <button
-              disabled={loading}
               className="bg-slate-700 text-white rounded-lg mb-5 uppercase hover:opacity-95
               disabled:opacity-80 w-[100%] text-[20px] mt-4 py-[18px] font-bold font-sans"
             >

@@ -11,7 +11,7 @@ body {
 
 /* Toast notify : */
 .toastBody {
-  font-size: 2rem;
+  font-size: 2.1rem;
   border-radius: 1rem;
   font-style: sans;
   font-weight: bold;
